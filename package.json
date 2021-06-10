@@ -11,6 +11,7 @@
     "@timbouc/vuetify-country-region-input": "^0.1.3",
     "core-js": "^3.6.5",
     "vue": "^2.6.11",
+    "vue-google-login": "^2.0.5",
     "vue-router": "^3.2.0",
     "vue-video-section": "^1.0.2",
     "vuetify": "^2.4.0"

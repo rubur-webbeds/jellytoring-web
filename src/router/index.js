@@ -7,6 +7,7 @@ import Admin from '../views/admin/Admin.vue'
 import Users from '../views/admin/Users.vue'
 import Activity from '../views/admin/Activity.vue'
 import Profile from '../views/Profile.vue'
+import Upload from '../views/Upload.vue'
 
 Vue.use(VueRouter)
 
@@ -26,6 +27,10 @@ const routes = [
   {
     path: '/profile',
     component: Profile
+  },
+  {
+    path: '/upload',
+    component: Upload
   },
   {
     path: '/admin',
