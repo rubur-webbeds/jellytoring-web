@@ -8,6 +8,7 @@ import Users from '../views/admin/Users.vue'
 import Activity from '../views/admin/Activity.vue'
 import Profile from '../views/Profile.vue'
 import Upload from '../views/Upload.vue'
+import EmailConfirmation from '../views/login/EmailConfirmation.vue'
 
 Vue.use(VueRouter)
 
@@ -47,6 +48,10 @@ const routes = [
         component: Activity
       }
     ]
+  },
+  {
+    path: '/emailconfirmation/:confirmationCode',
+    component: EmailConfirmation
   }
 ]
 
