@@ -18,16 +18,12 @@
         Oops! Something went wrong
       </v-alert>
       <!-- SUCCESS ALERT -->
-      <v-alert
-        v-if="this.showConfirmedAlert"
-        color="green"
-        dense
-        dismissible
-        outlined
-        type="success"
-      >
-        Email confirmed successfully
-      </v-alert>
+      <div v-if="this.showConfirmedAlert">
+        <v-alert color="green" dense dismissible outlined type="success">
+          Email confirmed successfully
+        </v-alert>
+        <v-btn large to="/login" class="mt-3">Sign in</v-btn>
+      </div>
     </div>
   </v-container>
 </template>
