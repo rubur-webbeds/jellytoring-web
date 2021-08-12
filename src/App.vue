@@ -6,11 +6,18 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn text outlined @click="showUploadForm = true">
-        <v-icon>mdi-plus</v-icon>
-      </v-btn>
-      <v-btn text to="login">Sign in</v-btn>
-      <v-btn text outlined to="signup">Sign up</v-btn>
+      <template v-if="!this.isUserLogged()">
+        <v-btn text outlined @click="showUploadForm = true">
+          <v-icon>mdi-plus</v-icon>
+        </v-btn>
+        <v-btn text to="login">Sign in</v-btn>
+        <v-btn text outlined to="signup">Sign up</v-btn>
+      </template>
+      <template v-else>
+        <v-avatar color="purple" size="36">
+          <span class="white--text text-h5">{{ this.getUserCapitalLetter() }}</span>
+        </v-avatar>
+      </template>
     </v-app-bar>
 
     <v-main>
@@ -22,7 +29,9 @@
 </template>
 
 <script>
+import auth from "@/services/auth";
 import Upload from './views/Upload.vue'
+
 export default {
   name: "App",
   components: {
@@ -31,5 +40,14 @@ export default {
   data: () => ({
     showUploadForm: false,
   }),
+  methods: {
+    isUserLogged() {
+      return auth.isUserLogged();
+    },
+    getUserCapitalLetter() {
+      // TODO: improve logic and syntax sugar
+      return auth.getUserLogged().full_name.split("")[0].toUpperCase();
+    },
+  }
 };
 </script>
