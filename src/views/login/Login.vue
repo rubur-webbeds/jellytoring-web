@@ -43,7 +43,7 @@
 
 <script>
 
-import auth from "@/services/auth";
+import authService from "@/services/authService.js";
 
 export default {
   name: "Login",
@@ -58,10 +58,10 @@ export default {
       this.showError = false;
       this.buttonLoading = true;
       try {
-        const response = await auth.login(this.email, this.password);
+        const response = await authService.login(this.email, this.password);
 
         const jwt = response.data;
-        auth.setUserLogged(jwt);
+        authService.setUserLogged(jwt);
         this.$router.push("/");
       } catch (error) {
         this.showError = true;

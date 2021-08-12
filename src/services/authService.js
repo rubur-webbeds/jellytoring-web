@@ -1,13 +1,14 @@
-import axios from 'axios';
+import { jellytoringApi } from "./jellytoringApi";
 
-// TODO: use axios.create
-const BASE_URL = "https://localhost:5001";
 const TOKEN_NAME = "token"
 
 export default {
   login(email, password) {
     const user = { email, password };
-    return axios.post(BASE_URL + "/api/sessions", user);
+    return jellytoringApi.post("/api/sessions", user);
+  },
+  register(user) {
+    return jellytoringApi.post("/api/users", user);
   },
   setUserLogged(userJWT) {
     setCookie(TOKEN_NAME, userJWT, 1);

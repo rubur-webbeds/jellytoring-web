@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import auth from "@/services/auth";
+import authService from "@/services/authService.js";
 import Upload from './views/Upload.vue'
 
 export default {
@@ -42,11 +42,11 @@ export default {
   }),
   methods: {
     isUserLogged() {
-      return auth.isUserLogged();
+      return authService.isUserLogged();
     },
     getUserCapitalLetter() {
       // TODO: improve logic and syntax sugar
-      return auth.getUserLogged().full_name.split("")[0].toUpperCase();
+      return authService.getUserLogged().full_name.split("")[0].toUpperCase();
     },
   }
 };
