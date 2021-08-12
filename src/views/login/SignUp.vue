@@ -5,76 +5,172 @@
         <v-toolbar-title>Sign up form</v-toolbar-title>
       </v-toolbar>
       <v-card-text>
-        <v-form>
+        <v-form
+          @submit.prevent="createUser"
+          id="create-user-form"
+          v-model="validForm"
+        >
           <v-text-field
-            name="name"
+            v-model="newUser.fullName"
             label="Full Name"
             type="text"
+            :rules="[validationRules.required]"
           ></v-text-field>
-          <v-text-field name="email" label="Email" type="email"></v-text-field>
-          <v-select :items="interests" label="Interest"></v-select>
-          <v-country-select v-model="country" />
-          <v-text-field label="Institution" type="text"></v-text-field>
           <v-text-field
-            name="password"
-            label="Contraseña"
+            v-model="newUser.email"
+            label="Email"
+            type="email"
+            :rules="[validationRules.required, validationRules.email]"
+          ></v-text-field>
+          <v-select
+            v-model="newUser.interestId"
+            :items="interests"
+            item-text="name"
+            item-value="id"
+            label="Interest"
+            :rules="[validationRules.required]"
+          ></v-select>
+          <v-select
+            v-model="newUser.countryCode"
+            :items="countries"
+            item-text="countryName"
+            item-value="countryCode"
+            label="Country"
+            :rules="[validationRules.required]"
+          ></v-select>
+          <v-text-field
+            v-model="newUser.institution"
+            label="Institution"
+            type="text"
+            :rules="[validationRules.required]"
+          ></v-text-field>
+          <v-text-field
+            v-model="newUser.password"
+            label="Password"
             type="password"
+            :rules="[validationRules.required]"
           ></v-text-field>
           <v-text-field
-            name="password"
+            v-model="newUser.repeatPassword"
             label="Repeat Password"
             type="password"
+            :rules="[
+              newUser.password === newUser.repeatPassword ||
+                'Passwords must match',
+              validationRules.required,
+            ]"
+            required
           ></v-text-field>
-          <v-checkbox v-model="checkbox">
+          <v-checkbox
+            v-model="newUser.grantContactInfoPermission"
+            :readonly="true"
+          >
             <template v-slot:label>
-              Grant access to the uploaded images
+              Grant access to your contact information
+            </template>
+          </v-checkbox>
+          <v-checkbox v-model="newUser.grantUibPermission" :readonly="true">
+            <template v-slot:label>
+              Grant UIB access to the provided multimedia for academic use
             </template>
           </v-checkbox>
         </v-form>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <GoogleLogin
-          :params="params"
-          :renderParams="renderParams"
-          :onSuccess="onSuccess"
-          :onFailure="onFailure"
-        ></GoogleLogin>
-        <GoogleLogin :params="params" :logoutButton="true">Logout</GoogleLogin>
-        <v-btn to="/">Create account</v-btn>
+        <v-alert
+          v-if="this.errorCreatingUser"
+          color="red"
+          dense
+          dismissible
+          outlined
+          type="error"
+        >
+          Oops! Something went wrong
+        </v-alert>
+        <v-spacer></v-spacer>
+        <v-btn
+          :loading="waitingApiResponse"
+          type="submit"
+          form="create-user-form"
+          :disabled="!validForm"
+        >
+          Create account</v-btn
+        >
       </v-card-actions>
     </v-card>
+
+    <v-dialog v-model="showResponseDialog" persistent max-width="600px">
+      <v-card>
+        <v-card-title>Almost there!</v-card-title>
+        <v-card-text>
+          Check your inbox. We've sent a confirmation email to
+          <strong>{{ this.newUser.email }}</strong>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn text @click="showResponseDialog = false">Close</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
 <script>
-import GoogleLogin from "vue-google-login";
+import { jellytoringApi } from "../../jellytoringApi";
+
 export default {
   name: "SignUp",
-  components: {
-    GoogleLogin,
-  },
   data: () => ({
-    interests: ["Científico", "Divulgativo", "Educación", "Otros"],
-    country: "",
-    checkbox: false,
-    params: {
-      client_id:
-        "506237789723-mmco8u4jd0raiufch657j2ivu3ip8vbb.apps.googleusercontent.com",
+    interests: [],
+    countries: [],
+    newUser: {
+      fullName: "",
+      emial: "",
+      interestId: 0,
+      countryCode: "",
+      institution: "",
+      password: "",
+      repeatPassword: "",
+      grantContactInfoPermission: true,
+      grantUibPermission: true,
     },
-    renderParams: {
-      width: 250,
-      height: 50,
-      longtitle: true,
+    validationRules: {
+      required: (value) => !!value || "This field is required",
+      email: (value) => {
+        const pattern =
+          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return pattern.test(value) || "Invalid e-mail";
+      },
     },
+    validForm: false,
+    showResponseDialog: false,
+    errorCreatingUser: false,
+    waitingApiResponse: false,
   }),
+  created() {
+    jellytoringApi
+      .get("api/countries")
+      .then((res) => (this.countries = res.data));
+    jellytoringApi
+      .get("api/interests")
+      .then((res) => (this.interests = res.data));
+  },
   methods: {
-    onSuccess(idToken) {
-      // Receive the idToken and make your magic with the backend
-      console.log(idToken);
-    },
-    onFailure(error) {
-      console.log(error);
+    createUser() {
+      this.waitingApiResponse = true;
+      if (this.validForm) {
+        jellytoringApi
+          .post("/api/users", this.newUser)
+          .then(() => {
+            this.showResponseDialog = true;
+            this.waitingApiResponse = false;
+          })
+          .catch(() => {
+            this.errorCreatingUser = true;
+            this.waitingApiResponse = false;
+          });
+      }
     },
   },
 };
