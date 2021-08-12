@@ -2,14 +2,19 @@
   <v-container>
     <v-card class="elevation-12">
       <v-toolbar dark>
-        <v-toolbar-title>Login form</v-toolbar-title>
+        <v-toolbar-title>
+            <v-icon>mdi-account</v-icon>
+          <span class="ml-3">
+            Login
+          </span>
+        </v-toolbar-title>
       </v-toolbar>
       <v-card-text>
         <v-form @submit.prevent>
           <v-text-field
             prepend-icon="mdi-account"
             name="login"
-            label="Login"
+            label="Email"
             type="email"
             v-model="email"
           ></v-text-field>
