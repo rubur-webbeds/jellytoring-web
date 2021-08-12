@@ -1,41 +1,37 @@
 <template>
-  <div>
-    <vue-video-section
-      v-if="false"
-      :elementId="'header-background-video'"
-      :ref="'header-background-video'"
-      :mp4Source="require('../assets/media/video/jellyfish.mp4')"
-      :mobileBreakpoint="992"
-      :desktopHeight="550"
-      :mobileHeight="450"
-      :playsinline="true"
-      :loop="true"
-      :autoplay="true"
-      :autobuffer="true"
-      :muted="true"
+  <section id="hero">
+    <div
+      class="d-flex justify-space-around mb-6 align-center py-16 container"
+      height="900"
     >
-      <div slot="overlay-content" class="overlay-content">
-        <h1>Machine learning applied to the ocean</h1>
-        <h3>
-          jellyfish video provided by Videvo, downloaded from www.videvo.net
-        </h3>
-        <!-- <div class="container py-4">
-        <div class="row justify-content-center mb-4">
-          <div class="col-lg-6">
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Expedita
-              quam laboriosam iusto, sapiente, tempore eaque eos unde.
-              Recusandae, officia perferendis tenetur in animi excepturi
-              perspiciatis culpa amet quia voluptatibus tempora.
-            </p>
-          </div>
-        </div>
-      </div> -->
+      <div>
+          <h1 class="text-h2 white--text">
+            Bringing artificial intelligence to the oceans
+          </h1>
+
+          <p class="mt-4 text-medium-emphasis white--text">
+            Ocean ocean ocean, Millions of developers and companies build, ship, and maintain their software on GitHub—the largest and most advanced development platform in the world.
+          </p>
       </div>
-    </vue-video-section>
-    <v-parallax
-      :src="require('../assets/media/img/jellyfish.jpg')"
-    ></v-parallax>
-    
-  </div>
+      <v-img class="pa-2"
+        :lazy-src="require('@/assets/media/img/jellyfish_1.jpeg')"
+        max-height="1500"
+        max-width="500"
+        :src="require('@/assets/media/img/jellyfish_1.jpeg')"
+      ></v-img>
+    </div>
+  </section> 
 </template>
+
+
+<script>
+  export default {
+    name: 'LandingHero'
+  }
+</script>
+
+<style scoped>
+#hero {
+  background-color: black;
+}
+</style>

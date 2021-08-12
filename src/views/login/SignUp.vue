@@ -117,7 +117,8 @@
 </template>
 
 <script>
-import { jellytoringApi } from "../../jellytoringApi";
+import authService from "@/services/authService.js";
+import { jellytoringApi } from "@/services/jellytoringApi.js";
 
 export default {
   name: "SignUp",
@@ -126,7 +127,7 @@ export default {
     countries: [],
     newUser: {
       fullName: "",
-      emial: "",
+      email: "",
       interestId: 0,
       countryCode: "",
       institution: "",
@@ -157,21 +158,18 @@ export default {
       .then((res) => (this.interests = res.data));
   },
   methods: {
-    createUser() {
+    async createUser() {
       this.waitingApiResponse = true;
-      if (this.validForm) {
-        jellytoringApi
-          .post("/api/users", this.newUser)
-          .then(() => {
-            this.showResponseDialog = true;
-            this.waitingApiResponse = false;
-          })
-          .catch(() => {
-            this.errorCreatingUser = true;
-            this.waitingApiResponse = false;
-          });
+      try {
+        await authService.register(this.newUser);
+
+        this.showResponseDialog = true;
+        this.waitingApiResponse = false;
+      } catch (error) {
+        this.showError = true;
+        this.buttonLoading = false;
       }
-    },
+    }
   },
 };
 </script>

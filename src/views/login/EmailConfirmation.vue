@@ -29,7 +29,8 @@
 </template>
 
 <script>
-import { jellytoringApi } from "@/jellytoringApi";
+import { jellytoringApi } from "@/services/jellytoringApi";
+
 export default {
   name: "EmailConfirmation",
   data: () => ({
