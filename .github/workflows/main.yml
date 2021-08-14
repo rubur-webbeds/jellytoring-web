@@ -1,0 +1,33 @@
+name: Jellytoring web deploy
+
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  container-job:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+    - run: npm install
+    - run: npm run build
+    - name: Install OpenVPN
+    - run: |
+        sudo apt update
+        sudo apt install -y openvpn openvpn-systemd-resolved
+        echo "${{ secrets.OVPN_FILE }}" > .github/vpn/config.ovpn
+    - name: Connect to VPN
+      uses: "kota65535/github-openvpn-connect-action@v1"
+      with:
+        config_file: .github/vpn/config.ovpn
+        username: ${{ secrets.OVPN_USERNAME }}
+        password: ${{ secrets.OVPN_PASSWORD }}
+        # client_key: ${{ secrets.OVPN_CLIENT_KEY }}
+        # tls_auth_key: ${{ secrets.OVPN_TLS_AUTH_KEY }}
+    - name: Test
+      run: echo CONNECTED TO VPN SHEEEEESH
