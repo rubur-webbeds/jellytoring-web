@@ -20,12 +20,13 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y openvpn openvpn-systemd-resolved
-        echo "${{ secrets.OVPN_FILE }}" > .github/vpn/config.ovpn
-        cat .github/vpn/config.ovpn
+        wget -O config1.vpn https://www.cti.uib.cat/digitalAssets/623/623172_vpn_uib_20201102.ovpn
+        mv config1.ovpn .github/vpn
+        cat .github/vpn/config1.ovpn
     - name: Connect to VPN
       uses: "kota65535/github-openvpn-connect-action@v1"
       with:
-        config_file: .github/vpn/config.ovpn
+        config_file: .github/vpn/config1.ovpn
         username: ${{ secrets.OVPN_USERNAME }}
         password: ${{ secrets.OVPN_PASSWORD }}
         # client_key: ${{ secrets.OVPN_CLIENT_KEY }}
