@@ -22,7 +22,7 @@ jobs:
         sudo apt install -y openvpn openvpn-systemd-resolved
         echo "${{ secrets.OVPN_FILE }}" > .github/vpn/config.ovpn
     - name: Connect to VPN
-      uses: "kota65535/github-openvpn-connect-action@v1"
+    - uses: "kota65535/github-openvpn-connect-action@v1"
       with:
         config_file: .github/vpn/config.ovpn
         username: ${{ secrets.OVPN_USERNAME }}
@@ -30,4 +30,4 @@ jobs:
         # client_key: ${{ secrets.OVPN_CLIENT_KEY }}
         # tls_auth_key: ${{ secrets.OVPN_TLS_AUTH_KEY }}
     - name: Test
-      run: echo CONNECTED TO VPN SHEEEEESH
+    - run: echo CONNECTED TO VPN SHEEEEESH
