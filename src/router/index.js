@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
+import Dashboard from '../views/Dashboard.vue'
 import Login from '../views/login/Login.vue'
 import SignUp from '../views/login/SignUp.vue'
 import Admin from '../views/admin/Admin.vue'
@@ -32,6 +33,10 @@ const routes = [
   {
     path: '/upload',
     component: Upload
+  },
+  {
+    path: '/dashboard',
+    component: Dashboard
   },
   {
     path: '/admin',

@@ -67,7 +67,7 @@ export default {
 
         const jwt = response.data;
         authService.setUserLogged(jwt);
-        this.$router.push("/");
+        this.$router.push("/dashboard");
       } catch (error) {
         this.showError = true;
         this.buttonLoading = false;
