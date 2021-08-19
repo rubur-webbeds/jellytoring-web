@@ -84,10 +84,25 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="hideForm">Cancel</v-btn>
-        <v-btn color="blue darken-1" text @click="uploadImage">Upload</v-btn>
+        <v-btn color="grey darken-1" text @click="hideForm">Cancel</v-btn>
+        <v-btn color="green darken-1" text @click="uploadImage">Upload</v-btn>
       </v-card-actions>
     </v-card>
+    <v-snackbar
+      v-model="showSuccess"
+    >
+      Image uploaded successfully
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          color="green"
+          text
+          v-bind="attrs"
+          @click="showSuccess = false"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-dialog>
 </template>
 
@@ -102,6 +117,7 @@ export default {
     uploadType: "",
     location: null,
     showError: false,
+    showSuccess: false,
     rules: [(v) => v.length <= 255 || "Max 255 characters"],
 
     // DOCS: https://vuetifyjs.com/en/components/date-pickers/#formatting
@@ -120,6 +136,13 @@ export default {
       this.showError = false;
       this.$emit("update:show", !this.show);
     },
+    resetForm() {
+      this.image = [];
+      this.uploadType = "";
+      this.location = null;
+      this.date = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10);
+      this.dateFormatted = this.formatDate(new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10));
+    },
     async uploadImage() {
       this.showError = false;
       this.buttonLoading = true;
@@ -137,7 +160,8 @@ export default {
           },
         });
         console.log(response);
-        // this.showSuccessDialog = true;
+        this.showSuccess = true;
+        this.resetForm();
         this.hideForm();
       } catch (error) {
         this.showError = true;

@@ -13,6 +13,7 @@
         <v-toolbar>
           <v-spacer></v-spacer>
           <v-spacer></v-spacer>
+          <v-spacer></v-spacer>
           <v-text-field
             v-model="search"
             clearable
@@ -42,7 +43,13 @@
                 <v-icon>mdi-arrow-down</v-icon>
               </v-btn>
             </v-btn-toggle>
+            <v-spacer></v-spacer>
+            <v-btn large color="primary" @click="showUploadForm = true">
+              <v-icon left>mdi-upload</v-icon>
+              Upload
+            </v-btn>
           </template>
+          <v-spacer></v-spacer>
           <v-spacer></v-spacer>
           <v-spacer></v-spacer>
         </v-toolbar>
