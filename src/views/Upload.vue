@@ -32,7 +32,7 @@
           <v-row>
             <v-col cols="12" md="6">
               <v-menu
-                v-model="menuDataPicker"
+                v-model="menuDatePicker"
                 :close-on-content-click="false"
                 transition="scale-transition"
                 offset-y
@@ -53,7 +53,7 @@
                 </template>
                 <v-date-picker
                   v-model="date"
-                  @input="menuDataPicker = false"
+                  @input="menuDatePicker = false"
                 ></v-date-picker>
               </v-menu>
             </v-col>
@@ -61,7 +61,7 @@
               <v-select
                 :items="['Just upload', 'Label image', 'Infer species']"
                 label="Action"
-                v-model="upload_type"
+                v-model="uploadType"
                 required
               ></v-select>
             </v-col>
@@ -99,7 +99,7 @@ export default {
   props: ["show"],
   data: (this_) => ({
     image: [],
-    upload_type: "",
+    uploadType: "",
     location: null,
     showError: false,
     rules: [(v) => v.length <= 255 || "Max 255 characters"],
@@ -113,7 +113,7 @@ export default {
         .toISOString()
         .substr(0, 10)
     ),
-    menuDataPicker: false,
+    menuDatePicker: false,
   }),
   methods: {
     hideForm() {
