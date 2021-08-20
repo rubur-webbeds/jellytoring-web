@@ -25,6 +25,7 @@
             label="Password"
             type="password"
             v-model="password"
+            @keyup.enter="login"
           ></v-text-field>
         </v-form>
         <v-alert
