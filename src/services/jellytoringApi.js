@@ -2,7 +2,7 @@ import axios from 'axios';
 import cookieService from './cookieService';
 
 export const jellytoringApi = axios.create({
-  baseURL: `https://localhost:5001/`
+  baseURL: location.host
 })
 
 jellytoringApi.interceptors.request.use(function (config) {
