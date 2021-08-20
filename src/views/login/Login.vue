@@ -74,5 +74,10 @@ export default {
       }
     }
   },
+  created() {
+    if (authService.isUserLogged()) {
+      this.$router.push("/dashboard");
+    }
+  }
 };
 </script>

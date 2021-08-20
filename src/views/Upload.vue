@@ -107,7 +107,7 @@
 </template>
 
 <script>
-import { jellytoringApi } from "@/services/jellytoringApi";
+import imageService from "@/services/imageService";
 
 export default {
   name: "Upload",
@@ -154,15 +154,12 @@ export default {
         formData.append("location", this.location);
         formData.append("date", this.date);
 
-        const response = await jellytoringApi.post("/api/images", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        const response = await imageService.uploadImage(formData);
         console.log(response);
         this.showSuccess = true;
         this.resetForm();
         this.hideForm();
+        await imageService.getUserImages();
       } catch (error) {
         this.showError = true;
         this.buttonLoading = false;
