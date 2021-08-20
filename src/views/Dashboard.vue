@@ -62,7 +62,6 @@
               v-for="item in props.items"
               :key="item.filename"
               cols="12"
-              class="ml-auto"
               sm="6"
               md="4"
               lg="3"
@@ -217,7 +216,7 @@
 
 <script>
 import Upload from "@/views/Upload.vue";
-import { jellytoringApi } from "@/services/jellytoringApi";
+import imageService from "@/services/imageService";
 
 export default {
   components: {
@@ -288,7 +287,7 @@ export default {
     async getUserImages() {
        this.showError = false;
        try {
-        const response = await jellytoringApi.get("/api/images");
+        const response = await imageService.getUserImages();
         console.log('getUserImages - response:', response.data);
 
         // PARSE DATA
