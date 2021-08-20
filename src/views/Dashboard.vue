@@ -60,7 +60,7 @@
           <v-row class="pa-4">
             <v-col
               v-for="item in props.items"
-              :key="item.image"
+              :key="item.filename"
               cols="12"
               class="ml-auto"
               sm="6"
@@ -69,7 +69,7 @@
             >
               <v-card>
                 <v-img
-                  :src="item.image"
+                  :src="`/images/${item.filename}`"
                   class="white--text align-end"
                   height="200px"
                   gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
@@ -209,6 +209,7 @@
 
 <script>
 import Upload from "@/views/Upload.vue";
+import { jellytoringApi } from "@/services/jellytoringApi";
 
 export default {
   components: {
@@ -224,9 +225,9 @@ export default {
       page: 1,
       itemsPerPage: 8,
       sortBy: "name",
-      keys: ["Name", "Image", "Confirmed", "Location", "Date", "UserId"],
-      items____EMPTY: [], // testing.
-      items: [
+      keys: ["Name", "Confirmed", "Location", "Date"],
+      items: [],
+      items_TESTING: [
         {
           name: "Image name #1",
           image: "https://cdn.vuetifyjs.com/images/cards/house.jpg",
@@ -243,7 +244,7 @@ export default {
           image: "https://cdn.vuetifyjs.com/images/cards/house.jpg",
           confirmed: true,
           location: "Port de Soller #2",
-          date: "13/08/2021",
+          date: "20/08/2021",
           user: {
             user_id: 1,
             name: "Joan",
@@ -253,96 +254,8 @@ export default {
           name: "Image name #3",
           image: "https://cdn.vuetifyjs.com/images/cards/house.jpg",
           confirmed: false,
-          location: "Port de Soller",
-          date: "13/08/2021",
-          user: {
-            user_id: 1,
-            name: "Joan",
-          },
-        },
-        {
-          name: "Image name",
-          image: "https://cdn.vuetifyjs.com/images/cards/house.jpg",
-          confirmed: true,
-          location: "Port de Soller",
-          date: "13/08/2021",
-          user: {
-            user_id: 1,
-            name: "Joan",
-          },
-        },
-        {
-          name: "Image name",
-          image: "https://cdn.vuetifyjs.com/images/cards/house.jpg",
-          confirmed: false,
-          location: "Port de Soller",
-          date: "13/08/2021",
-          user: {
-            user_id: 1,
-            name: "Joan",
-          },
-        },
-        {
-          name: "Image name",
-          image: "https://cdn.vuetifyjs.com/images/cards/house.jpg",
-          confirmed: false,
-          location: "Port de Soller",
-          date: "13/08/2021",
-          user: {
-            user_id: 1,
-            name: "Joan",
-          },
-        },
-        {
-          name: "Image name",
-          image: "https://cdn.vuetifyjs.com/images/cards/house.jpg",
-          confirmed: false,
-          location: "Port de Soller",
-          date: "13/08/2021",
-          user: {
-            user_id: 1,
-            name: "Joan",
-          },
-        },
-        {
-          name: "Image name",
-          image: "https://cdn.vuetifyjs.com/images/cards/house.jpg",
-          confirmed: false,
-          location: "Port de Soller",
-          date: "13/08/2021",
-          user: {
-            user_id: 1,
-            name: "Joan",
-          },
-        },
-        {
-          name: "Image name",
-          image: "https://cdn.vuetifyjs.com/images/cards/house.jpg",
-          confirmed: false,
-          location: "Port de Soller",
-          date: "13/08/2021",
-          user: {
-            user_id: 1,
-            name: "Joan",
-          },
-        },
-        {
-          name: "Image name",
-          image: "https://cdn.vuetifyjs.com/images/cards/house.jpg",
-          confirmed: false,
-          location: "Port de Soller",
-          date: "13/08/2021",
-          user: {
-            user_id: 1,
-            name: "Joan",
-          },
-        },
-        {
-          name: "Image name",
-          image: "https://cdn.vuetifyjs.com/images/cards/house.jpg",
-          confirmed: false,
-          location: "Port de Soller",
-          date: "13/08/2021",
+          location: "Port de Soller #3",
+          date: "14/08/2021",
           user: {
             user_id: 1,
             name: "Joan",
@@ -359,7 +272,25 @@ export default {
       return this.keys.filter((key) => key !== "Name");
     },
   },
+  created() {
+    this.getUserImages();
+  },
   methods: {
+    async getUserImages() {
+       try {
+        const response = await jellytoringApi.get("/api/images");
+        console.log('getUserImages - response:', response.data);
+
+        // PARSE DATA
+        for (let index = 0; index < response.data.length; index++) {
+          response.data[index].date = new Date(response.data[index].date).toLocaleDateString('es-ES');
+        }
+
+        this.items = response.data
+      } catch (error) {
+        this.showError = true;
+      }
+    },
     nextPage() {
       if (this.page + 1 <= this.numberOfPages) this.page += 1;
     },
