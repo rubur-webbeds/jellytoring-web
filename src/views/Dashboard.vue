@@ -202,6 +202,14 @@
       </template>
     </v-data-iterator>
     <Upload :show.sync="showUploadForm" />
+    <v-snackbar v-model="showError" timeout="-1">
+      Could not retrieve images. Please reload and try again later.
+      <template v-slot:action="{ attrs }">
+        <v-btn color="green" text v-bind="attrs" @click="reloadPage()">
+          Reload
+        </v-btn>
+      </template>
+    </v-snackbar>
   </div>
 </template>
 
@@ -218,6 +226,7 @@ export default {
   data() {
     return {
       showUploadForm: false,
+      showError: true,
       itemsPerPageArray: [4, 8, 16, 24, 32, 64],
       search: "",
       filter: {},
@@ -277,6 +286,7 @@ export default {
   },
   methods: {
     async getUserImages() {
+       this.showError = false;
        try {
         const response = await jellytoringApi.get("/api/images");
         console.log('getUserImages - response:', response.data);
@@ -290,6 +300,9 @@ export default {
       } catch (error) {
         this.showError = true;
       }
+    },
+    reloadPage() {
+      location.reload()
     },
     nextPage() {
       if (this.page + 1 <= this.numberOfPages) this.page += 1;
