@@ -8,8 +8,8 @@ import Admin from '../views/admin/Admin.vue'
 import Users from '../views/admin/Users.vue'
 import Activity from '../views/admin/Activity.vue'
 import Profile from '../views/Profile.vue'
-import Upload from '../views/Upload.vue'
 import EmailConfirmation from '../views/login/EmailConfirmation.vue'
+import authService from "@/services/authService";
 
 Vue.use(VueRouter)
 
@@ -31,16 +31,18 @@ const routes = [
     component: Profile
   },
   {
-    path: '/upload',
-    component: Upload
-  },
-  {
     path: '/dashboard',
-    component: Dashboard
+    component: Dashboard,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/admin',
     component: Admin,
+    meta: {
+      requiresAuth: true
+    },
     children: [
       {
         path: 'users',
@@ -64,5 +66,20 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 });
+
+router.beforeEach((to, from, next) => {
+  if(to.matched.some(record => record.meta.requiresAuth)) {
+      if (!authService.isUserLogged()) {
+          next({
+              path: '/login',
+              params: { nextUrl: to.fullPath }
+          });
+      } else {
+        next();
+      }
+  } else {
+    next();
+  }
+})
 
 export default router
