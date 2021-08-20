@@ -1,4 +1,5 @@
 import { jellytoringApi } from "./jellytoringApi";
+import cookieService from "./cookieService";
 
 const TOKEN_NAME = "token"
 
@@ -11,19 +12,20 @@ export default {
     return jellytoringApi.post("/api/users", user);
   },
   setUserLogged(userJWT) {
-    setCookie(TOKEN_NAME, userJWT, 1);
+    cookieService.setCookie(TOKEN_NAME, userJWT, 1);
   },
   getUserLogged() {
-    const jwt = getCookie(TOKEN_NAME);
+    const jwt = cookieService.getCookie(TOKEN_NAME);
     // TODO: improve this logic
     if (jwt.includes(".")) {
       const userBase64Encoded = jwt.split(".")[1];
-      const userObject = JSON.parse(atob(userBase64Encoded));
+      // const userObject = JSON.parse(atob(userBase64Encoded));
+      const userObject = JSON.parse(Buffer.from(userBase64Encoded, 'base64'));
       return userObject;
     }
   },
   isUserLogged() {
-    const user = getCookie(TOKEN_NAME);
+    const user = cookieService.getCookie(TOKEN_NAME);
 
     if (!user || user == "") {
       return false;
@@ -31,27 +33,3 @@ export default {
     return true;
   }
 };
-
-
-
-
-function setCookie(cname, cvalue, exdays) {
-  const d = new Date();
-  d.setTime(d.getTime() + (exdays*24*60*60*1000));
-  let expires = "expires="+ d.toUTCString();
-  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-}
-function getCookie(cname) {
-  let name = cname + "=";
-  let ca = document.cookie.split(';');
-  for(let i = 0; i < ca.length; i++) {
-    let c = ca[i];
-    while (c.charAt(0) == ' ') {
-      c = c.substring(1);
-    }
-    if (c.indexOf(name) == 0) {
-      return c.substring(name.length, c.length);
-    }
-  }
-  return "";
-}
