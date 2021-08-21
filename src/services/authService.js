@@ -8,6 +8,9 @@ export default {
     const user = { email, password };
     return jellytoringApi.post("/api/sessions", user);
   },
+  logout() {
+    cookieService.removeCookie(TOKEN_NAME);
+  },
   register(user) {
     return jellytoringApi.post("/api/users", user);
   },
