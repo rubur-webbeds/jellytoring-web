@@ -5,7 +5,7 @@
         <v-toolbar-title>
             <v-icon>mdi-account</v-icon>
           <span class="ml-3">
-            Login
+            Sign in
           </span>
         </v-toolbar-title>
       </v-toolbar>
@@ -40,7 +40,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn @click="this.login" :loading="buttonLoading" :disabled="buttonLoading">Login</v-btn>
+        <v-btn @click="this.login" :loading="buttonLoading" :disabled="buttonLoading">Sign in</v-btn>
       </v-card-actions>
     </v-card>
   </v-container>
