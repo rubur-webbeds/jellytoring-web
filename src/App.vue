@@ -1,8 +1,12 @@
 <template>
   <v-app>
     <v-app-bar app dark>
-      <v-icon large>mdi-jellyfish</v-icon>
-      <h2 class="ml-3">Jellytoring</h2>
+      <v-icon large @click="redirectTo('/dashboard')">mdi-jellyfish</v-icon>
+      <div
+        class="text-h4 ml-3 active pointer"
+        v-text="this.title"
+        @click="redirectTo('/dashboard')"
+      ></div>
 
       <v-spacer></v-spacer>
 
@@ -88,7 +92,8 @@ export default {
   },
   data: () => ({
     showUploadForm: false,
-    user: null,
+    title: 'Jellytoring',
+    user: null
   }),
   methods: {
     isUserLogged() {
@@ -104,10 +109,19 @@ export default {
     getUserCapitalLetter() {
       return this.user.full_name.split("")[0].toUpperCase();
     },
+    redirectTo(url) {
+      this.$router.push(url);
+    },
   },
   created() {
-    document.title = "Jellytoring";
+    document.title = this.title;
     this.getUserLogged();
   },
 };
 </script>
+
+<style scoped>
+.pointer{
+  cursor: pointer;
+}
+</style>
