@@ -18,11 +18,34 @@
         <v-btn text outlined to="signup">Sign up</v-btn>
       </template>
       <template v-else>
-        <v-avatar color="purple" size="36">
-          <span class="white--text text-h5">{{
-            this.getUserCapitalLetter()
-          }}</span>
-        </v-avatar>
+        <v-menu bottom min-width="200px" rounded offset-y>
+          <template v-slot:activator="{ on }">
+            <v-btn icon x-large v-on="on">
+              <v-avatar color="purple" size="38">
+                <span class="white--text text-h5">{{
+                  getUserCapitalLetter()
+                }}</span>
+              </v-avatar>
+            </v-btn>
+          </template>
+          <v-card>
+            <v-list-item-content class="justify-center">
+              <div class="mx-auto text-center">
+                <v-avatar color="purple" size="48">
+                  <span class="white--text text-h5">{{
+                    getUserCapitalLetter()
+                  }}</span>
+                </v-avatar>
+                <h3>{{ user.full_name }}</h3>
+                <p class="text-caption mt-1">
+                  {{ user.email }}
+                </p>
+                <v-divider class="my-3"></v-divider>
+                <v-btn depressed rounded text @click="logout()"> Sign out </v-btn>
+              </div>
+            </v-list-item-content>
+          </v-card>
+        </v-menu>
       </template>
     </v-app-bar>
 
@@ -45,19 +68,30 @@ export default {
   },
   data: () => ({
     showUploadForm: false,
-    title: 'Jellytoring'
+    title: 'Jellytoring',
+    user: null
   }),
   methods: {
     isUserLogged() {
       return authService.isUserLogged();
     },
+    logout() {
+      authService.logout();
+      this.$router.push("/login");
+    },
+    getUserLogged() {
+      this.user = authService.getUserLogged();
+    },
     getUserCapitalLetter() {
-      // TODO: improve logic and syntax sugar
-      return authService.getUserLogged().full_name.split("")[0].toUpperCase();
+      return this.user.full_name.split("")[0].toUpperCase();
     },
     redirectTo(url) {
       this.$router.push(url);
     },
+  },
+  created() {
+    document.title = this.title;
+    this.getUserLogged();
   },
 };
 </script>

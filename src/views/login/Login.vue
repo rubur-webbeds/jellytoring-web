@@ -3,8 +3,10 @@
     <v-card class="elevation-12">
       <v-toolbar dark>
         <v-toolbar-title>
-          <v-icon>mdi-account</v-icon>
-          <span class="ml-3"> Login </span>
+            <v-icon>mdi-account</v-icon>
+          <span class="ml-3">
+            Sign in
+          </span>
         </v-toolbar-title>
       </v-toolbar>
       <v-card-text>
@@ -45,7 +47,7 @@
           @click="this.login"
           :loading="buttonLoading"
           :disabled="buttonLoading || !validForm"
-          >Login</v-btn
+          >Sign in</v-btn
         >
       </v-card-actions>
     </v-card>
