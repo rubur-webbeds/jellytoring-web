@@ -1,8 +1,12 @@
 <template>
   <v-app>
     <v-app-bar app dark>
-      <v-icon large>mdi-jellyfish</v-icon>
-      <h2 class="ml-3">Jellytoring</h2>
+      <v-icon large @click="redirectTo('/dashboard')">mdi-jellyfish</v-icon>
+      <div
+        class="text-h4 ml-3 active pointer"
+        v-text="this.title"
+        @click="redirectTo('/dashboard')"
+      ></div>
 
       <v-spacer></v-spacer>
 
@@ -15,7 +19,9 @@
       </template>
       <template v-else>
         <v-avatar color="purple" size="36">
-          <span class="white--text text-h5">{{ this.getUserCapitalLetter() }}</span>
+          <span class="white--text text-h5">{{
+            this.getUserCapitalLetter()
+          }}</span>
         </v-avatar>
       </template>
     </v-app-bar>
@@ -30,7 +36,7 @@
 
 <script>
 import authService from "@/services/authService.js";
-import Upload from './views/Upload.vue'
+import Upload from "./views/Upload.vue";
 
 export default {
   name: "App",
@@ -39,6 +45,7 @@ export default {
   },
   data: () => ({
     showUploadForm: false,
+    title: 'Jellytoring'
   }),
   methods: {
     isUserLogged() {
@@ -48,6 +55,15 @@ export default {
       // TODO: improve logic and syntax sugar
       return authService.getUserLogged().full_name.split("")[0].toUpperCase();
     },
-  }
+    redirectTo(url) {
+      this.$router.push(url);
+    },
+  },
 };
 </script>
+
+<style scoped>
+.pointer{
+  cursor: pointer;
+}
+</style>
