@@ -18,22 +18,6 @@
         <v-btn text outlined to="signup">Sign up</v-btn>
       </template>
       <template v-else>
-        <!-- <v-menu bottom
-      offset-y :nudge-width="200">
-          <template v-slot:activator="{ on, attrs }">
-            <v-avatar color="purple" size="36" v-bind="attrs" v-on="on">
-              <span class="white--text text-h5">{{
-                getUserCapitalLetter()
-              }}</span>
-            </v-avatar>
-          </template>
-
-          <v-list>
-            <v-list-item>
-              <v-list-item-title @click="logout()">Logout</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu> -->
         <v-menu bottom min-width="200px" rounded offset-y>
           <template v-slot:activator="{ on }">
             <v-btn icon x-large v-on="on">
@@ -57,14 +41,6 @@
                   {{ user.email }}
                 </p>
                 <v-divider class="my-3"></v-divider>
-                <!-- <v-btn
-                depressed
-                rounded
-                text
-              >
-                Edit Account
-              </v-btn> -->
-                <!-- <v-divider class="my-3"></v-divider> -->
                 <v-btn depressed rounded text @click="logout()"> Sign out </v-btn>
               </div>
             </v-list-item-content>
