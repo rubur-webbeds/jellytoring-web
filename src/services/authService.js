@@ -22,8 +22,9 @@ export default {
     // TODO: improve this logic
     if (jwt.includes(".")) {
       const userBase64Encoded = jwt.split(".")[1];
-      // const userObject = JSON.parse(atob(userBase64Encoded));
-      const userObject = JSON.parse(Buffer.from(userBase64Encoded, 'base64'));
+      const userObject = decodeBase64AndJSONParse(userBase64Encoded);
+
+      userObject.firstInitial = getUserFirstInitial(userObject.full_name);
       return userObject;
     }
   },
@@ -36,3 +37,15 @@ export default {
     return true;
   }
 };
+
+function decodeBase64AndJSONParse(input) {
+  return JSON.parse(decodeBase64(input));
+}
+
+function decodeBase64(encoded) {
+  return Buffer.from(encoded, 'base64');
+}
+
+function getUserFirstInitial(userName) {
+  return userName.charAt(0).toUpperCase();
+}
