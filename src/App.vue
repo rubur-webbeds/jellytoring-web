@@ -9,7 +9,6 @@
       ></div>
 
       <v-spacer></v-spacer>
-
       <template v-if="!this.isUserLogged()">
         <v-btn text outlined @click="showUploadForm = true">
           <v-icon>mdi-plus</v-icon>
@@ -22,11 +21,7 @@
           <template v-slot:activator="{ on }">
             <v-btn icon x-large v-on="on">
               <v-avatar color="purple" size="38">
-                <span
-                  class="white--text text-h5"
-                  v-if="user && user.full_name"
-                  >{{ getUserCapitalLetter() }}</span
-                >
+                <span class="white--text text-h5">{{ user.firstInitial }}</span>
               </v-avatar>
             </v-btn>
           </template>
@@ -34,11 +29,9 @@
             <v-list-item-content class="justify-center">
               <div class="mx-auto text-center">
                 <v-avatar color="purple" size="48">
-                  <span
-                    class="white--text text-h5"
-                    v-if="user && user.full_name"
-                    >{{ getUserCapitalLetter() }}</span
-                  >
+                  <span class="white--text text-h5">{{
+                    user.firstInitial
+                  }}</span>
                 </v-avatar>
                 <h3>{{ user.full_name }}</h3>
                 <p class="text-caption mt-1">
@@ -88,9 +81,6 @@ export default {
     getUserLogged() {
       this.user = authService.getUserLogged();
     },
-    getUserCapitalLetter() {
-      return this.user.full_name.split("")[0].toUpperCase();
-    },
     redirectTo(url) {
       this.$router.push(url);
     },
@@ -98,6 +88,9 @@ export default {
   created() {
     document.title = this.title;
     this.getUserLogged();
+  },
+  watch: {
+    $route: "getUserLogged",
   },
 };
 </script>
