@@ -22,9 +22,11 @@
           <template v-slot:activator="{ on }">
             <v-btn icon x-large v-on="on">
               <v-avatar color="purple" size="38">
-                <span class="white--text text-h5">{{
-                  getUserCapitalLetter()
-                }}</span>
+                <span
+                  class="white--text text-h5"
+                  v-if="user && user.full_name"
+                  >{{ getUserCapitalLetter() }}</span
+                >
               </v-avatar>
             </v-btn>
           </template>
@@ -32,16 +34,20 @@
             <v-list-item-content class="justify-center">
               <div class="mx-auto text-center">
                 <v-avatar color="purple" size="48">
-                  <span class="white--text text-h5">{{
-                    getUserCapitalLetter()
-                  }}</span>
+                  <span
+                    class="white--text text-h5"
+                    v-if="user && user.full_name"
+                    >{{ getUserCapitalLetter() }}</span
+                  >
                 </v-avatar>
                 <h3>{{ user.full_name }}</h3>
                 <p class="text-caption mt-1">
                   {{ user.email }}
                 </p>
                 <v-divider class="my-3"></v-divider>
-                <v-btn depressed rounded text @click="logout()"> Sign out </v-btn>
+                <v-btn depressed rounded text @click="logout()">
+                  Sign out
+                </v-btn>
               </div>
             </v-list-item-content>
           </v-card>
@@ -68,8 +74,8 @@ export default {
   },
   data: () => ({
     showUploadForm: false,
-    title: 'Jellytoring',
-    user: null
+    title: "Jellytoring",
+    user: null,
   }),
   methods: {
     isUserLogged() {
@@ -97,7 +103,7 @@ export default {
 </script>
 
 <style scoped>
-.pointer{
+.pointer {
   cursor: pointer;
 }
 </style>
