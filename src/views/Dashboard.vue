@@ -31,6 +31,9 @@
               solo-inverted
               hide-details
               :items="keys"
+              item-text="t"
+              item-value="v"
+              persistent-hint
               prepend-inner-icon="mdi-filter"
               label="Sort by"
             ></v-select>
@@ -74,7 +77,7 @@
                   gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                 >
                   <v-card-title class="subheading font-weight-bold"
-                    >{{ item.date }}
+                    >{{ item.date | dateFilter }}
                   </v-card-title>
                 </v-img>
 
@@ -90,9 +93,37 @@
                   </v-list-item>
                   <v-list-item two-line>
                     <v-list-item-content>
-                      <v-list-item-title>Approved</v-list-item-title>
+                      <v-list-item-title>Status</v-list-item-title>
                       <v-list-item-subtitle>
-                        <v-tooltip bottom>
+                        <!-- INSERT INTO `statuses`(`name`, `code`) VALUES ('Pending', 'PEND'), ('Approved', 'APPR'), ('Discarded', 'DISC'); -->
+                        <template v-if="item.status.code == 'PEND'">
+                          <v-icon color="orange" small>
+                            mdi-dots-horizontal-circle
+                          </v-icon>
+                        </template>
+                        <template v-else-if="item.status.code == 'APPR'">
+                          <v-icon color="green" small>
+                            mdi-check-circle
+                          </v-icon>
+                        </template>
+                        <template v-else-if="item.status.code == 'DISC'">
+                          <v-icon color="red" small> mdi-alert-circle </v-icon>
+                        </template>
+                        {{ item && item.status && item.status.name }}
+
+                        <!-- <v-icon
+                          :color="item.confirmed ? 'green' : 'red'"
+                          v-bind="attrs"
+                          small
+                          v-on="on"
+                        >
+                          {{
+                            item.confirmed
+                              ? "mdi-alert-circle-check"
+                              : "mdi-alert-circle"
+                          }}
+                        </v-icon> -->
+                        <!-- <v-tooltip bottom>
                           <template v-slot:activator="{ on, attrs }">
                             <v-icon
                               :color="item.confirmed ? 'green' : 'red'"
@@ -118,7 +149,7 @@
                               Your image has not been approved yet.
                             </template>
                           </span>
-                        </v-tooltip>
+                        </v-tooltip> -->
                       </v-list-item-subtitle>
                     </v-list-item-content>
                   </v-list-item>
@@ -200,7 +231,7 @@
         </v-container>
       </template>
     </v-data-iterator>
-    <Upload :show.sync="showUploadForm" />
+    <Upload :show.sync="showUploadForm" :images.sync="items" />
     <v-snackbar v-model="showError" timeout="-1">
       Could not retrieve images. Please reload and try again later.
       <template v-slot:action="{ attrs }">
@@ -232,52 +263,18 @@ export default {
       sortDesc: false,
       page: 1,
       itemsPerPage: 8,
-      sortBy: "name",
-      keys: ["Name", "Confirmed", "Location", "Date"],
-      items: [],
-      items_TESTING: [
-        {
-          name: "Image name #1",
-          image: "https://cdn.vuetifyjs.com/images/cards/house.jpg",
-          confirmed: false,
-          location: "Port de Soller",
-          date: "13/08/2021",
-          user: {
-            user_id: 1,
-            name: "Joan",
-          },
-        },
-        {
-          name: "Image name #2",
-          image: "https://cdn.vuetifyjs.com/images/cards/house.jpg",
-          confirmed: true,
-          location: "Port de Soller #2",
-          date: "20/08/2021",
-          user: {
-            user_id: 1,
-            name: "Joan",
-          },
-        },
-        {
-          name: "Image name #3",
-          image: "https://cdn.vuetifyjs.com/images/cards/house.jpg",
-          confirmed: false,
-          location: "Port de Soller #3",
-          date: "14/08/2021",
-          user: {
-            user_id: 1,
-            name: "Joan",
-          },
-        },
+      sortBy: "date",
+      keys: [
+        { t: "Date", v: "date" },
+        { t: "Location", v: "location" },
+        { t: "Status", v: "status.code" },
       ],
+      items: [],
     };
   },
   computed: {
     numberOfPages() {
       return Math.ceil(this.items.length / this.itemsPerPage);
-    },
-    filteredKeys() {
-      return this.keys.filter((key) => key !== "Name");
     },
   },
   created() {
@@ -285,23 +282,18 @@ export default {
   },
   methods: {
     async getUserImages() {
-       this.showError = false;
-       try {
+      this.showError = false;
+      try {
         const response = await imageService.getUserImages();
-        console.log('getUserImages - response:', response.data);
+        console.log("getUserImages - response:", response.data);
 
-        // PARSE DATA
-        for (let index = 0; index < response.data.length; index++) {
-          response.data[index].date = new Date(response.data[index].date).toLocaleDateString('es-ES');
-        }
-
-        this.items = response.data
+        this.items = response.data;
       } catch (error) {
         this.showError = true;
       }
     },
     reloadPage() {
-      location.reload()
+      location.reload();
     },
     nextPage() {
       if (this.page + 1 <= this.numberOfPages) this.page += 1;
@@ -311,6 +303,12 @@ export default {
     },
     updateItemsPerPage(number) {
       this.itemsPerPage = number;
+    },
+  },
+  filters: {
+    dateFilter(value) {
+      if (!value) return;
+      return new Date(value).toLocaleDateString("es-ES");
     },
   },
 };
