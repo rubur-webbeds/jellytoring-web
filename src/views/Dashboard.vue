@@ -31,6 +31,9 @@
               solo-inverted
               hide-details
               :items="keys"
+              item-text="t"
+              item-value="v"
+              persistent-hint
               prepend-inner-icon="mdi-filter"
               label="Sort by"
             ></v-select>
@@ -90,9 +93,37 @@
                   </v-list-item>
                   <v-list-item two-line>
                     <v-list-item-content>
-                      <v-list-item-title>Approved</v-list-item-title>
+                      <v-list-item-title>Status</v-list-item-title>
                       <v-list-item-subtitle>
-                        <v-tooltip bottom>
+                        <!-- INSERT INTO `statuses`(`name`, `code`) VALUES ('Pending', 'PEND'), ('Approved', 'APPR'), ('Discarded', 'DISC'); -->
+                        <template v-if="item.status.code == 'PEND'">
+                          <v-icon color="orange" small>
+                            mdi-dots-horizontal-circle
+                          </v-icon>
+                        </template>
+                        <template v-else-if="item.status.code == 'APPR'">
+                          <v-icon color="green" small>
+                            mdi-check-circle
+                          </v-icon>
+                        </template>
+                        <template v-else-if="item.status.code == 'DISC'">
+                          <v-icon color="red" small> mdi-alert-circle </v-icon>
+                        </template>
+                        {{ item.status.name }}
+
+                        <!-- <v-icon
+                          :color="item.confirmed ? 'green' : 'red'"
+                          v-bind="attrs"
+                          small
+                          v-on="on"
+                        >
+                          {{
+                            item.confirmed
+                              ? "mdi-alert-circle-check"
+                              : "mdi-alert-circle"
+                          }}
+                        </v-icon> -->
+                        <!-- <v-tooltip bottom>
                           <template v-slot:activator="{ on, attrs }">
                             <v-icon
                               :color="item.confirmed ? 'green' : 'red'"
@@ -118,7 +149,7 @@
                               Your image has not been approved yet.
                             </template>
                           </span>
-                        </v-tooltip>
+                        </v-tooltip> -->
                       </v-list-item-subtitle>
                     </v-list-item-content>
                   </v-list-item>
@@ -232,9 +263,143 @@ export default {
       sortDesc: false,
       page: 1,
       itemsPerPage: 8,
-      sortBy: "name",
-      keys: ["Name", "Confirmed", "Location", "Date"],
-      items: [],
+      sortBy: "Date", // { textX: "Date", valueX: "date" },
+      keys: [
+        { t: "Date", v: "date" },
+        { t: "Location", v: "location" },
+        { t: "Status", v: "status.code" }
+      ],
+      // keys: ["Date", "Status.code"],
+      // keysText: ["Date", "Status"],
+      // keysValue: ["Date", "Status.code"],
+      // keysAttr: [
+      //   {
+      //     t: "Date",
+      //     v: "date",
+      //   },
+      //   {
+      //     t: "Status",
+      //     v: "status.code",
+      //   },
+      // ],
+
+      //   { textX: "Date", valueX: "date" },
+      //   { textX: "Location", valueX: "location" },
+      //   { textX: "Status", valueX: "status.code" }
+      // ],
+      // items: [],
+      // INSERT INTO `statuses`(`name`, `code`) VALUES ('Pending', 'PEND'), ('Approved', 'APPR'), ('Discarded', 'DISC');
+      items: [
+        {
+          id: 1,
+          filename: "dcb8dc22-5cfa-411d-a173-0f83b02aa7d5.png",
+          date: "1/8/2021",
+          status: {
+            code: "DISC",
+            name: "Discarded",
+          },
+          location: "Playa XYZ",
+          file: null,
+          userId: 2,
+        },
+        {
+          id: 2,
+          filename: "24b12d33-5e75-4396-9492-2f4c21d6e5a9.png",
+          date: "23/8/2021",
+          status: {
+            code: "PEND",
+            name: "Pending",
+          },
+          location: "Playa Arenal",
+          file: null,
+          userId: 2,
+        },
+        {
+          id: 3,
+          filename: "4396-9492-2f4c21d6e5a8.png",
+          date: "20/8/2021",
+
+          status: {
+            code: "APPR",
+            name: "Approved",
+          },
+          location: "Playa Caracol",
+          file: null,
+          userId: 2,
+        },
+        {
+          id: 1,
+          filename: "dcb8dc22-51cfa-411d-a173-0f83b02aa7d5.png",
+          date: "30/8/2021",
+          status: {
+            code: "APPR",
+            name: "Approved",
+          },
+          location: "Playa XYZ",
+          file: null,
+          userId: 2,
+        },
+        {
+          id: 2,
+          filename: "24b12d33-5e175-4396-9492-2f4c21d6e5a9.png",
+          date: "23/8/2021",
+          status: {
+            code: "PEND",
+            name: "Pending",
+          },
+          location: "Playa Arenal",
+          file: null,
+          userId: 2,
+        },
+        {
+          id: 3,
+          filename: "4396-94921-2f4c21d6e5a8.png",
+          date: "20/8/2021",
+          status: {
+            code: "DISC",
+            name: "Discarded",
+          },
+          location: "Playa Caracol",
+          file: null,
+          userId: 2,
+        },
+        {
+          id: 1,
+          filename: "dcb8dc22-5cfa-411d-a1173-0f83b02aa7d5.png",
+          date: "1/8/2021",
+          status: {
+            code: "APPR",
+            name: "Approved",
+          },
+          location: "Playa XYZ",
+          file: null,
+          userId: 2,
+        },
+        {
+          id: 2,
+          filename: "24b12d33-5e75-4396-9492-2f4c21d61e5a9.png",
+          date: "23/8/2021",
+          status: {
+            code: "PEND",
+            name: "Pending",
+          },
+          location: "Playa Arenal",
+          file: null,
+          userId: 2,
+        },
+        {
+          id: 3,
+          filename: "4396-9492-2f4c21d6e5a81.png",
+          date: "20/8/2021",
+          status: {
+            code: "DISC",
+            name: "Discarded",
+          },
+          location: "Playa Caracol",
+          file: null,
+          userId: 2,
+        },
+      ],
       items_TESTING: [
         {
           name: "Image name #1",
@@ -276,32 +441,37 @@ export default {
     numberOfPages() {
       return Math.ceil(this.items.length / this.itemsPerPage);
     },
-    filteredKeys() {
-      return this.keys.filter((key) => key !== "Name");
-    },
+    // filteredKeys() {
+    //   return this.keys.properties.filter((key) => {
+    //     console.log('filteredKeys - key:', key);
+    //     key !== "Date"
+    //   });
+    // },
   },
   created() {
     this.getUserImages();
   },
   methods: {
     async getUserImages() {
-       this.showError = false;
-       try {
+      this.showError = false;
+      try {
         const response = await imageService.getUserImages();
-        console.log('getUserImages - response:', response.data);
+        console.log("getUserImages - response:", response.data);
 
         // PARSE DATA
         for (let index = 0; index < response.data.length; index++) {
-          response.data[index].date = new Date(response.data[index].date).toLocaleDateString('es-ES');
+          response.data[index].date = new Date(
+            response.data[index].date
+          ).toLocaleDateString("es-ES");
         }
 
-        this.items = response.data
+        // this.items = response.data;
       } catch (error) {
         this.showError = true;
       }
     },
     reloadPage() {
-      location.reload()
+      location.reload();
     },
     nextPage() {
       if (this.page + 1 <= this.numberOfPages) this.page += 1;
@@ -312,6 +482,14 @@ export default {
     updateItemsPerPage(number) {
       this.itemsPerPage = number;
     },
+    setSortByStatus() {
+      if (this.sortBy == "Status") {
+        this.sortBy = "status.code";
+      }
+    },
   },
+  // watch: {
+  //   sortBy: "setSortByStatus",
+  // },
 };
 </script>
