@@ -162,12 +162,11 @@ export default {
       this.waitingApiResponse = true;
       try {
         await authService.register(this.newUser);
-
         this.showResponseDialog = true;
         this.waitingApiResponse = false;
       } catch (error) {
-        this.showError = true;
-        this.buttonLoading = false;
+        this.errorCreatingUser = true;
+        this.waitingApiResponse = false;
       }
     }
   },
