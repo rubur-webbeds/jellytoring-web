@@ -78,7 +78,6 @@
                 >
                   <v-card-title class="subheading font-weight-bold"
                     >{{ item.date | dateFilter }}
-                    {{ sortBy }}
                   </v-card-title>
                 </v-img>
 
@@ -304,11 +303,6 @@ export default {
     },
     updateItemsPerPage(number) {
       this.itemsPerPage = number;
-    },
-    setSortByStatus() {
-      if (this.sortBy == "Status") {
-        this.sortBy = "status.code";
-      }
     },
   },
   filters: {
