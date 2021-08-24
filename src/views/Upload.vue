@@ -88,17 +88,10 @@
         <v-btn color="green darken-1" text @click="uploadImage">Upload</v-btn>
       </v-card-actions>
     </v-card>
-    <v-snackbar
-      v-model="showSuccess"
-    >
+    <v-snackbar v-model="showSuccess">
       Image uploaded successfully
       <template v-slot:action="{ attrs }">
-        <v-btn
-          color="green"
-          text
-          v-bind="attrs"
-          @click="showSuccess = false"
-        >
+        <v-btn color="green" text v-bind="attrs" @click="showSuccess = false">
           Close
         </v-btn>
       </template>
@@ -118,7 +111,7 @@ export default {
     location: null,
     showError: false,
     showSuccess: false,
-    rules: [(v) => v.length <= 255 || "Max 255 characters"],
+    rules: [(v) => (v && v.length <= 255) || "Max 255 characters"],
 
     // DOCS: https://vuetifyjs.com/en/components/date-pickers/#formatting
     date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
@@ -140,8 +133,14 @@ export default {
       this.image = [];
       this.uploadType = "";
       this.location = null;
-      this.date = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10);
-      this.dateFormatted = this.formatDate(new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10));
+      this.date = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+        .toISOString()
+        .substr(0, 10);
+      this.dateFormatted = this.formatDate(
+        new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+          .toISOString()
+          .substr(0, 10)
+      );
     },
     async uploadImage() {
       this.showError = false;
@@ -149,7 +148,7 @@ export default {
 
       try {
         let formData = new FormData();
-        
+
         formData.append("file", this.image);
         formData.append("location", this.location);
         formData.append("date", this.date);
@@ -159,7 +158,8 @@ export default {
         this.showSuccess = true;
         this.resetForm();
         this.hideForm();
-        await imageService.getUserImages();
+
+        this.syncLocalUserImages();
       } catch (error) {
         this.showError = true;
         this.buttonLoading = false;
@@ -174,6 +174,10 @@ export default {
       if (!date) return null;
       const [month, day, year] = date.split("/");
       return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+    },
+    async syncLocalUserImages() {
+      const { data } = await imageService.getUserImages();
+      this.$emit("update:images", data);
     },
   },
   computed: {
