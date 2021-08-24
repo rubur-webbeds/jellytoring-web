@@ -77,7 +77,8 @@
                   gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                 >
                   <v-card-title class="subheading font-weight-bold"
-                    >{{ item.date }}
+                    >{{ item.date | dateFilter }}
+                    {{ sortBy }}
                   </v-card-title>
                 </v-img>
 
@@ -109,7 +110,7 @@
                         <template v-else-if="item.status.code == 'DISC'">
                           <v-icon color="red" small> mdi-alert-circle </v-icon>
                         </template>
-                        {{ item.status.name }}
+                        {{ item && item.status && item.status.name }}
 
                         <!-- <v-icon
                           :color="item.confirmed ? 'green' : 'red'"
@@ -231,7 +232,7 @@
         </v-container>
       </template>
     </v-data-iterator>
-    <Upload :show.sync="showUploadForm" />
+    <Upload :show.sync="showUploadForm" :images.sync="items" />
     <v-snackbar v-model="showError" timeout="-1">
       Could not retrieve images. Please reload and try again later.
       <template v-slot:action="{ attrs }">
@@ -263,190 +264,19 @@ export default {
       sortDesc: false,
       page: 1,
       itemsPerPage: 8,
-      sortBy: "Date", // { textX: "Date", valueX: "date" },
+      sortBy: "date",
       keys: [
         { t: "Date", v: "date" },
         { t: "Location", v: "location" },
-        { t: "Status", v: "status.code" }
+        { t: "Status", v: "status.code" },
       ],
-      // keys: ["Date", "Status.code"],
-      // keysText: ["Date", "Status"],
-      // keysValue: ["Date", "Status.code"],
-      // keysAttr: [
-      //   {
-      //     t: "Date",
-      //     v: "date",
-      //   },
-      //   {
-      //     t: "Status",
-      //     v: "status.code",
-      //   },
-      // ],
-
-      //   { textX: "Date", valueX: "date" },
-      //   { textX: "Location", valueX: "location" },
-      //   { textX: "Status", valueX: "status.code" }
-      // ],
-      // items: [],
-      // INSERT INTO `statuses`(`name`, `code`) VALUES ('Pending', 'PEND'), ('Approved', 'APPR'), ('Discarded', 'DISC');
-      items: [
-        {
-          id: 1,
-          filename: "dcb8dc22-5cfa-411d-a173-0f83b02aa7d5.png",
-          date: "1/8/2021",
-          status: {
-            code: "DISC",
-            name: "Discarded",
-          },
-          location: "Playa XYZ",
-          file: null,
-          userId: 2,
-        },
-        {
-          id: 2,
-          filename: "24b12d33-5e75-4396-9492-2f4c21d6e5a9.png",
-          date: "23/8/2021",
-          status: {
-            code: "PEND",
-            name: "Pending",
-          },
-          location: "Playa Arenal",
-          file: null,
-          userId: 2,
-        },
-        {
-          id: 3,
-          filename: "4396-9492-2f4c21d6e5a8.png",
-          date: "20/8/2021",
-
-          status: {
-            code: "APPR",
-            name: "Approved",
-          },
-          location: "Playa Caracol",
-          file: null,
-          userId: 2,
-        },
-        {
-          id: 1,
-          filename: "dcb8dc22-51cfa-411d-a173-0f83b02aa7d5.png",
-          date: "30/8/2021",
-          status: {
-            code: "APPR",
-            name: "Approved",
-          },
-          location: "Playa XYZ",
-          file: null,
-          userId: 2,
-        },
-        {
-          id: 2,
-          filename: "24b12d33-5e175-4396-9492-2f4c21d6e5a9.png",
-          date: "23/8/2021",
-          status: {
-            code: "PEND",
-            name: "Pending",
-          },
-          location: "Playa Arenal",
-          file: null,
-          userId: 2,
-        },
-        {
-          id: 3,
-          filename: "4396-94921-2f4c21d6e5a8.png",
-          date: "20/8/2021",
-          status: {
-            code: "DISC",
-            name: "Discarded",
-          },
-          location: "Playa Caracol",
-          file: null,
-          userId: 2,
-        },
-        {
-          id: 1,
-          filename: "dcb8dc22-5cfa-411d-a1173-0f83b02aa7d5.png",
-          date: "1/8/2021",
-          status: {
-            code: "APPR",
-            name: "Approved",
-          },
-          location: "Playa XYZ",
-          file: null,
-          userId: 2,
-        },
-        {
-          id: 2,
-          filename: "24b12d33-5e75-4396-9492-2f4c21d61e5a9.png",
-          date: "23/8/2021",
-          status: {
-            code: "PEND",
-            name: "Pending",
-          },
-          location: "Playa Arenal",
-          file: null,
-          userId: 2,
-        },
-        {
-          id: 3,
-          filename: "4396-9492-2f4c21d6e5a81.png",
-          date: "20/8/2021",
-          status: {
-            code: "DISC",
-            name: "Discarded",
-          },
-          location: "Playa Caracol",
-          file: null,
-          userId: 2,
-        },
-      ],
-      items_TESTING: [
-        {
-          name: "Image name #1",
-          image: "https://cdn.vuetifyjs.com/images/cards/house.jpg",
-          confirmed: false,
-          location: "Port de Soller",
-          date: "13/08/2021",
-          user: {
-            user_id: 1,
-            name: "Joan",
-          },
-        },
-        {
-          name: "Image name #2",
-          image: "https://cdn.vuetifyjs.com/images/cards/house.jpg",
-          confirmed: true,
-          location: "Port de Soller #2",
-          date: "20/08/2021",
-          user: {
-            user_id: 1,
-            name: "Joan",
-          },
-        },
-        {
-          name: "Image name #3",
-          image: "https://cdn.vuetifyjs.com/images/cards/house.jpg",
-          confirmed: false,
-          location: "Port de Soller #3",
-          date: "14/08/2021",
-          user: {
-            user_id: 1,
-            name: "Joan",
-          },
-        },
-      ],
+      items: [],
     };
   },
   computed: {
     numberOfPages() {
       return Math.ceil(this.items.length / this.itemsPerPage);
     },
-    // filteredKeys() {
-    //   return this.keys.properties.filter((key) => {
-    //     console.log('filteredKeys - key:', key);
-    //     key !== "Date"
-    //   });
-    // },
   },
   created() {
     this.getUserImages();
@@ -458,14 +288,7 @@ export default {
         const response = await imageService.getUserImages();
         console.log("getUserImages - response:", response.data);
 
-        // PARSE DATA
-        for (let index = 0; index < response.data.length; index++) {
-          response.data[index].date = new Date(
-            response.data[index].date
-          ).toLocaleDateString("es-ES");
-        }
-
-        // this.items = response.data;
+        this.items = response.data;
       } catch (error) {
         this.showError = true;
       }
@@ -488,8 +311,11 @@ export default {
       }
     },
   },
-  // watch: {
-  //   sortBy: "setSortByStatus",
-  // },
+  filters: {
+    dateFilter(value) {
+      if (!value) return;
+      return new Date(value).toLocaleDateString("es-ES");
+    },
+  },
 };
 </script>
