@@ -13,7 +13,6 @@
         <v-toolbar>
           <v-spacer></v-spacer>
           <v-spacer></v-spacer>
-          <v-spacer></v-spacer>
           <v-text-field
             v-model="search"
             clearable
@@ -46,13 +45,11 @@
                 <v-icon>mdi-arrow-down</v-icon>
               </v-btn>
             </v-btn-toggle>
-            <v-spacer></v-spacer>
-            <v-btn large color="primary" @click="showUploadForm = true">
+            <!-- <v-btn large color="primary" @click="showUploadForm = true">
               <v-icon left>mdi-upload</v-icon>
               Upload
-            </v-btn>
+            </v-btn> -->
           </template>
-          <v-spacer></v-spacer>
           <v-spacer></v-spacer>
           <v-spacer></v-spacer>
         </v-toolbar>
@@ -114,6 +111,17 @@
                     </v-list-item-content>
                   </v-list-item>
                 </v-card-text>
+
+                <v-card-action>
+                  <template>
+                    <v-btn color="red lighten-2" text @click="discard">
+                      Discard
+                    </v-btn>
+                    <v-btn color="green lighten-2" text @click="setUserImage(item)">
+                      Approve
+                    </v-btn>
+                  </template>
+                </v-card-action>
               </v-card>
             </v-col>
           </v-row>
@@ -121,10 +129,10 @@
       </template>
       <template v-slot:no-data>
         <div class="grey--text text--darken-1 text-center text-body-4 mt-8">
-          <div class="mb-4">No images yet?</div>
-          <v-btn class="ma-1" dark @click="showUploadForm = true">
+          <div class="mb-4">No images yet</div>
+          <!-- <v-btn class="ma-1" dark @click="showUploadForm = true">
             UPLOAD NOW
-          </v-btn>
+          </v-btn> -->
         </div>
       </template>
       <template v-slot:footer>
@@ -170,7 +178,7 @@
         </v-container>
       </template>
     </v-data-iterator>
-    <Upload :show.sync="showUploadForm" :images.sync="items" />
+    <!-- <Upload :show.sync="showUploadForm" :images.sync="items" /> -->
     <v-snackbar v-model="showError" timeout="-1">
       Could not retrieve images. Please reload and try again later.
       <template v-slot:action="{ attrs }">
@@ -185,13 +193,13 @@
 
 
 <script>
-import Upload from "@/views/Upload.vue";
+// import Upload from "@/views/Upload.vue";
 import imageService from "@/services/imageService";
 
 export default {
-  components: {
-    Upload,
-  },
+  // components: {
+  //   Upload,
+  // },
   data() {
     return {
       showUploadForm: false,
@@ -217,14 +225,28 @@ export default {
     },
   },
   created() {
-    this.getUserImages();
+    this.getPendingImages();
   },
   methods: {
-    async getUserImages() {
+    async getPendingImages() {
       this.showError = false;
       try {
-        const response = await imageService.getUserImages();
-        console.log("getUserImages - response:", response.data);
+        const response = await imageService.getPendingImages();
+        console.log("getPendingImages - response:", response.data);
+
+        this.items = response.data;
+      } catch (error) {
+        this.showError = true;
+      }
+    },
+    async setUserImage(image) {
+      this.showError = false;
+      try {
+        image.status = {
+          "code": "APPR"
+        }
+        const response = await imageService.setUserImage(image);
+        console.log("setUserImage - response:", response.data);
 
         this.items = response.data;
       } catch (error) {

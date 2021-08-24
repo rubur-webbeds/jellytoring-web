@@ -7,6 +7,7 @@ import SignUp from '../views/login/SignUp.vue'
 import Admin from '../views/admin/Admin.vue'
 import Users from '../views/admin/Users.vue'
 import Activity from '../views/admin/Activity.vue'
+import Pending from '../views/admin/Pending.vue'
 import Profile from '../views/Profile.vue'
 import EmailConfirmation from '../views/login/EmailConfirmation.vue'
 import authService from "@/services/authService";
@@ -53,7 +54,12 @@ const routes = [
         path: 'activity',
         name: 'activity',
         component: Activity
-      }
+      },
+      {
+        path: '/pending',
+        name: 'pending',
+        component: Pending
+      },
     ]
   },
   {
