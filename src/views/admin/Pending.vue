@@ -112,16 +112,23 @@
                   </v-list-item>
                 </v-card-text>
 
-                <v-card-action>
-                  <template>
-                    <v-btn color="red lighten-2" text @click="discard">
-                      Discard
-                    </v-btn>
-                    <v-btn color="green lighten-2" text @click="setUserImage(item)">
-                      Approve
-                    </v-btn>
-                  </template>
-                </v-card-action>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                      <v-btn
+                        color="red lighten-2"
+                        text
+                        @click="openDiscardUserImageDialog(item)"
+                      >
+                        Discard
+                      </v-btn>
+                      <v-btn
+                        color="green lighten-2"
+                        text
+                        @click="approveUserImageStatus(item)"
+                      >
+                        Approve
+                      </v-btn>
+                </v-card-actions>
               </v-card>
             </v-col>
           </v-row>
@@ -180,13 +187,54 @@
     </v-data-iterator>
     <!-- <Upload :show.sync="showUploadForm" :images.sync="items" /> -->
     <v-snackbar v-model="showError" timeout="-1">
-      Could not retrieve images. Please reload and try again later.
+      An error has ocurred. Please reload and try again later.
       <template v-slot:action="{ attrs }">
         <v-btn color="green" text v-bind="attrs" @click="reloadPage()">
           Reload
         </v-btn>
+        <v-btn text v-bind="attrs" @click="showError = false">
+          <v-icon dark> mdi-minus </v-icon>
+        </v-btn>
       </template>
     </v-snackbar>
+
+    <v-dialog v-model="discardUserImageDialog" persistent max-width="600px">
+      <v-card>
+        <v-card-title>
+          <span class="text-h5">Discard reason</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="12" md="12">
+                <v-textarea
+                  clearable
+                  row-height="10"
+                  rows="2"
+                  v-model="discardUserImageReason"
+                  label="Reason"
+                  hint="Please specify the reason why you are discarding this image. This message will be sent to the creator of the image."
+                  required
+                >
+                </v-textarea>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text @click="discardUserImageDialog = false"> Cancel </v-btn>
+          <v-btn
+            color="red"
+            text
+            :disabled="discardUserImageReason == ''"
+            @click="discardUserImageStatus(discardCurrentImage)"
+          >
+            Discard
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -203,6 +251,9 @@ export default {
   data() {
     return {
       showUploadForm: false,
+      discardUserImageDialog: false,
+      discardCurrentImage: null,
+      discardUserImageReason: "",
       showError: true,
       itemsPerPageArray: [4, 8, 16, 24, 32, 64],
       search: "",
@@ -239,19 +290,36 @@ export default {
         this.showError = true;
       }
     },
-    async setUserImage(image) {
+    async approveUserImageStatus(image) {
       this.showError = false;
       try {
-        image.status = {
-          "code": "APPR"
-        }
-        const response = await imageService.setUserImage(image);
-        console.log("setUserImage - response:", response.data);
+        image.status = { code: "APPR" };
+
+        const response = await imageService.updateUserImage(image);
+        console.log("updateUserImage - response:", response.data);
 
         this.items = response.data;
       } catch (error) {
         this.showError = true;
       }
+    },
+    async discardUserImageStatus(image) {
+      this.showError = false;
+      try {
+        image.reason = this.discardUserImageReason;
+        image.status = { code: "DISC" };
+
+        const response = await imageService.updateUserImage(image);
+        console.log("updateUserImage - response:", response.data);
+
+        this.items = response.data;
+      } catch (error) {
+        this.showError = true;
+      }
+    },
+    openDiscardUserImageDialog(image) {
+      this.discardCurrentImage = image;
+      this.discardUserImageDialog = true;
     },
     reloadPage() {
       location.reload();

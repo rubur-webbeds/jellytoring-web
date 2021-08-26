@@ -12,9 +12,9 @@ export default {
     });
   },
   getPendingImages() {
-    return jellytoringApi.get("/api/images");
+    return jellytoringApi.get("/api/images?statusCode=PEND");
   },
-  setUserImage(image) {
-    return jellytoringApi.put("/api/images?statusCode=PEND", image);
+  updateUserImage(image) {
+    return jellytoringApi.put(`/api/images/resolution/${image.id}`, image);
   },
 }
