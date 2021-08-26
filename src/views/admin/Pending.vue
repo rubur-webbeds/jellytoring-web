@@ -193,7 +193,16 @@
           Reload
         </v-btn>
         <v-btn text v-bind="attrs" @click="showError = false">
-          <v-icon dark> mdi-minus </v-icon>
+          <v-icon dark>mdi-close</v-icon>
+        </v-btn>
+      </template>
+    </v-snackbar>
+
+    <v-snackbar v-model="showSuccess">
+      Resolution send successfully.
+      <template v-slot:action="{ attrs }">
+        <v-btn text v-bind="attrs" @click="showSuccess = false">
+          <v-icon dark>mdi-close</v-icon>
         </v-btn>
       </template>
     </v-snackbar>
@@ -255,6 +264,7 @@ export default {
       discardCurrentImage: null,
       discardUserImageReason: "",
       showError: true,
+      showSuccess: false,
       itemsPerPageArray: [4, 8, 16, 24, 32, 64],
       search: "",
       filter: {},
@@ -292,27 +302,34 @@ export default {
     },
     async approveUserImageStatus(image) {
       this.showError = false;
+      this.showSuccess = false;
       try {
+        image = Object.assign({}, image);
+        image.reason = "Approved";
         image.status = { code: "APPR" };
 
         const response = await imageService.updateUserImage(image);
-        console.log("updateUserImage - response:", response.data);
+        console.log("approveUserImageStatus/updateUserImage - response:", response.data);
 
         this.items = response.data;
+        this.showSuccess = true;
       } catch (error) {
         this.showError = true;
       }
     },
     async discardUserImageStatus(image) {
       this.showError = false;
+      this.showSuccess = false;
       try {
+        image = Object.assign({}, image);
         image.reason = this.discardUserImageReason;
         image.status = { code: "DISC" };
 
         const response = await imageService.updateUserImage(image);
-        console.log("updateUserImage - response:", response.data);
+        console.log("discardUserImageStatus/updateUserImage - response:", response.data);
 
         this.items = response.data;
+        this.showSuccess = true;
       } catch (error) {
         this.showError = true;
       }
