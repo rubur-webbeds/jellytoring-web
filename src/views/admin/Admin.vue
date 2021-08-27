@@ -28,6 +28,7 @@ export default {
     navigations: [
       { title: "Users", to: "manageUsers", icon: "mdi-account-group" },
       { title: "Activity", to: "activity", icon: "mdi-history" },
+      { title: "Pending Uploads", to: "pending", icon: "mdi-upload" },
     ],
   }),
 };
