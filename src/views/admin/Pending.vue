@@ -199,7 +199,7 @@
     </v-snackbar>
 
     <v-snackbar v-model="showSuccess">
-      Resolution send successfully.
+      Resolution sent successfully.
       <template v-slot:action="{ attrs }">
         <v-btn text v-bind="attrs" @click="showSuccess = false">
           <v-icon dark>mdi-close</v-icon>
@@ -239,7 +239,7 @@
             :disabled="discardUserImageReason == ''"
             @click="discardUserImageStatus(discardCurrentImage)"
           >
-            Discard
+            Discard & Send resolution
           </v-btn>
         </v-card-actions>
       </v-card>
