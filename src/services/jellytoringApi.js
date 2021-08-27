@@ -3,9 +3,7 @@ import cookieService from './cookieService';
 
 export let jellytoringApi = axios.create({
   // PRODUCTION:
-  // baseURL: ''
-  // LOCAL:
-  baseURL: 'http://localhost:5000'
+  baseURL: ''
 });
 
 if (process.env.NODE_ENV == 'development') {
