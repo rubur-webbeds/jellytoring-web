@@ -13,7 +13,6 @@
         <v-toolbar>
           <v-spacer></v-spacer>
           <v-spacer></v-spacer>
-          <v-spacer></v-spacer>
           <v-text-field
             v-model="search"
             clearable
@@ -46,13 +45,11 @@
                 <v-icon>mdi-arrow-down</v-icon>
               </v-btn>
             </v-btn-toggle>
-            <v-spacer></v-spacer>
-            <v-btn large color="primary" @click="showUploadForm = true">
+            <!-- <v-btn large color="primary" @click="showUploadForm = true">
               <v-icon left>mdi-upload</v-icon>
               Upload
-            </v-btn>
+            </v-btn> -->
           </template>
-          <v-spacer></v-spacer>
           <v-spacer></v-spacer>
           <v-spacer></v-spacer>
         </v-toolbar>
@@ -114,6 +111,24 @@
                     </v-list-item-content>
                   </v-list-item>
                 </v-card-text>
+
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                      <v-btn
+                        color="red lighten-2"
+                        text
+                        @click="openDiscardUserImageDialog(item)"
+                      >
+                        Discard
+                      </v-btn>
+                      <v-btn
+                        color="green lighten-2"
+                        text
+                        @click="approveUserImageStatus(item)"
+                      >
+                        Approve
+                      </v-btn>
+                </v-card-actions>
               </v-card>
             </v-col>
           </v-row>
@@ -121,10 +136,10 @@
       </template>
       <template v-slot:no-data>
         <div class="grey--text text--darken-1 text-center text-body-4 mt-8">
-          <div class="mb-4">No images yet?</div>
-          <v-btn class="ma-1" dark @click="showUploadForm = true">
+          <div class="mb-4">No images yet</div>
+          <!-- <v-btn class="ma-1" dark @click="showUploadForm = true">
             UPLOAD NOW
-          </v-btn>
+          </v-btn> -->
         </div>
       </template>
       <template v-slot:footer>
@@ -170,32 +185,86 @@
         </v-container>
       </template>
     </v-data-iterator>
-    <Upload :show.sync="showUploadForm" :images.sync="items" />
+    <!-- <Upload :show.sync="showUploadForm" :images.sync="items" /> -->
     <v-snackbar v-model="showError" timeout="-1">
-      Could not retrieve images. Please reload and try again later.
+      An error has ocurred. Please reload and try again later.
       <template v-slot:action="{ attrs }">
         <v-btn color="green" text v-bind="attrs" @click="reloadPage()">
           Reload
         </v-btn>
+        <v-btn text v-bind="attrs" @click="showError = false">
+          <v-icon dark>mdi-close</v-icon>
+        </v-btn>
       </template>
     </v-snackbar>
+
+    <v-snackbar v-model="showSuccess">
+      Resolution sent successfully.
+      <template v-slot:action="{ attrs }">
+        <v-btn text v-bind="attrs" @click="showSuccess = false">
+          <v-icon dark>mdi-close</v-icon>
+        </v-btn>
+      </template>
+    </v-snackbar>
+
+    <v-dialog v-model="discardUserImageDialog" persistent max-width="600px">
+      <v-card>
+        <v-card-title>
+          <span class="text-h5">Discard reason</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="12" md="12">
+                <v-textarea
+                  clearable
+                  row-height="10"
+                  rows="2"
+                  v-model="discardUserImageReason"
+                  label="Reason"
+                  hint="Please specify the reason why you are discarding this image. This message will be sent to the creator of the image."
+                  required
+                >
+                </v-textarea>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text @click="discardUserImageDialog = false"> Cancel </v-btn>
+          <v-btn
+            color="red"
+            text
+            :disabled="discardUserImageReason == ''"
+            @click="discardUserImageStatus(discardCurrentImage)"
+          >
+            Discard & Send resolution
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 
 
 <script>
-import Upload from "@/views/Upload.vue";
+// import Upload from "@/views/Upload.vue";
 import imageService from "@/services/imageService";
 
 export default {
-  components: {
-    Upload,
-  },
+  // components: {
+  //   Upload,
+  // },
   data() {
     return {
       showUploadForm: false,
+      discardUserImageDialog: false,
+      discardCurrentImage: null,
+      discardUserImageReason: "",
       showError: true,
+      showSuccess: false,
       itemsPerPageArray: [4, 8, 16, 24, 32, 64],
       search: "",
       filter: {},
@@ -217,19 +286,58 @@ export default {
     },
   },
   created() {
-    this.getUserImages();
+    this.getPendingImages();
   },
   methods: {
-    async getUserImages() {
+    async getPendingImages() {
       this.showError = false;
       try {
-        const response = await imageService.getUserImages();
-        console.log("getUserImages - response:", response.data);
+        const response = await imageService.getPendingImages();
+        console.log("getPendingImages - response:", response.data);
 
         this.items = response.data;
       } catch (error) {
         this.showError = true;
       }
+    },
+    async approveUserImageStatus(image) {
+      this.showError = false;
+      this.showSuccess = false;
+      try {
+        image = Object.assign({}, image);
+        image.reason = "Your image has been approved";
+        image.status = { code: "APPR" };
+
+        const response = await imageService.updateUserImage(image);
+        console.log("approveUserImageStatus/updateUserImage - response:", response.data);
+
+        this.showSuccess = true;
+        this.getPendingImages();
+      } catch (error) {
+        this.showError = true;
+      }
+    },
+    async discardUserImageStatus(image) {
+      this.showError = false;
+      this.showSuccess = false;
+      try {
+        image = Object.assign({}, image);
+        image.reason = this.discardUserImageReason;
+        image.status = { code: "DISC" };
+
+        const response = await imageService.updateUserImage(image);
+        console.log("discardUserImageStatus/updateUserImage - response:", response.data);
+
+        this.showSuccess = true;
+        this.discardUserImageDialog = false;
+        this.getPendingImages();
+      } catch (error) {
+        this.showError = true;
+      }
+    },
+    openDiscardUserImageDialog(image) {
+      this.discardCurrentImage = image;
+      this.discardUserImageDialog = true;
     },
     reloadPage() {
       location.reload();
