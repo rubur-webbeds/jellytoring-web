@@ -305,14 +305,14 @@ export default {
       this.showSuccess = false;
       try {
         image = Object.assign({}, image);
-        image.reason = "Approved";
+        image.reason = "Your image has been approved";
         image.status = { code: "APPR" };
 
         const response = await imageService.updateUserImage(image);
         console.log("approveUserImageStatus/updateUserImage - response:", response.data);
 
-        this.items = response.data;
         this.showSuccess = true;
+        this.getPendingImages();
       } catch (error) {
         this.showError = true;
       }
@@ -328,8 +328,9 @@ export default {
         const response = await imageService.updateUserImage(image);
         console.log("discardUserImageStatus/updateUserImage - response:", response.data);
 
-        this.items = response.data;
         this.showSuccess = true;
+        this.discardUserImageDialog = false;
+        this.getPendingImages();
       } catch (error) {
         this.showError = true;
       }
