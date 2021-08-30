@@ -74,6 +74,10 @@
               Grant UIB access to the provided multimedia for academic use
             </template>
           </v-checkbox>
+          <span class="caption">In compliance with the provisions set out in Organic Law 3/2018 of 5th December on personal data protection and guarantee of digital rights, we hereby inform you that the collected data shall be included in one or more files managed by the UIB in the record of processing activities created expressly for this purpose in order to handle your request/application. The requested data are required in order to fulfil the aforementioned purpose and, in this sense, failure to provide them would hinder the processing of your request/application.</span>
+          <br>
+          <br>
+          <span class="caption">The UIB is responsible for processing the data and therefore guarantees your rights of access, rectification, erasure, portability, restriction and to object to the processing of your data, as well as your right to not be subject to decisions based solely on the automated processing thereof. In order to exercise these rights, please contact: the University of the Balearic Islands, Secretaria General; FAO: delegada de protecció de dades; ctra. de Valldemossa, km 7,5; 07122 Palma (Balearic Islands) or you can send an email to dpo@uib.es. You also have the right to claim before the Control Authority. Likewise, the UIB undertakes to respect the confidentiality of your data and use them for the purpose for which the files were created.</span>
         </v-form>
       </v-card-text>
       <v-card-actions>
