@@ -9,14 +9,16 @@
           <v-container>
             <v-row>
               <v-col cols="12" md="12">
-                <v-file-input
+                <!-- <v-file-input
                   label="Upload image"
                   accept="image/png,image/jpg,image/jpeg"
                   prepend-icon="mdi-camera"
                   v-model="image"
+                  @change="loadFile($event)"
                   show-size
                   required
-                ></v-file-input>
+                ></v-file-input> -->
+                <input type="file" @change="onFileChange" />
               </v-col>
               <v-col cols="12" md="12">
                 <v-text-field
@@ -113,11 +115,17 @@
           <span class="text-h5">Label</span>
         </v-card-title>
         <v-card-text>
-          <canvas width="800" ref="canvas" height="500" style="background-image: url(https://cdn.vuetifyjs.com/images/cards/house.jpg)"
+          <div
+            width="800"
+            ref="canvas"
+            height="500"
             @mousedown="mousedownX"
             @mousemove="mousemoveX"
-            @mouseup="mouseupX"></canvas>
-          </v-card-text>
+            @mouseup="mouseupX"
+          >
+          </div>
+          <img ref="image" v-if="previewImage" :src="previewImage" style="display: none;" @load="canvasLoad"/>
+        </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="grey darken-1" text @click="hideForm">Cancel</v-btn>
@@ -127,7 +135,7 @@
             >
           </template>
           <template v-else-if="uploadType == 'Label image'">
-            <v-btn color="green darken-1" text @click="showLabellingTool = true"
+            <v-btn color="green darken-1" text @click="openLabellingTool"
               >NEXT STEP</v-btn
             >
           </template>
@@ -145,12 +153,13 @@ export default {
   props: ["show"],
   data: (this_) => ({
     image: [],
+    previewImage: null,
     imageRules: [(value) => !value || "Required"],
     uploadType: "",
     location: null,
     showError: false,
     showSuccess: false,
-    showLabellingTool: true, // DEBUG
+    showLabellingTool: false, // TODO: true for DEBUG
     rules: [(v) => (v && v.length <= 255) || "Max 255 characters"],
 
     // DOCS: https://vuetifyjs.com/en/components/date-pickers/#formatting
@@ -234,6 +243,30 @@ export default {
       const { data } = await imageService.getUserImages();
       this.$emit("update:images", data);
     },
+    onFileChange(e) {
+      const file = e.target.files[0];
+      this.previewImage = URL.createObjectURL(file);
+    },
+    openLabellingTool() {
+      this.showLabellingTool = true;
+      // this.ctx.drawImage(img, 0, 0);
+
+      // TESTING:
+      // this.ctx.fillStyle = 'green';
+      // this.ctx.fillRect(10, 10, 150, 150);
+    },
+    canvasLoad() {
+      alert()
+      this.canvas = this.$refs.canvas;
+      this.ctx = this.$refs.canvas.getContext("2d");
+      this.canvasx = this.canvas.offsetLeft;
+      this.canvasy = this.canvas.offsetTop;
+      this.canvas.style.background = `url('${this.previewImage}')`;
+      this.canvas.style.backgroundRepeat = 'no-repeat';
+    },
+    // imageLoad() {
+    //   this.ctx.drawImage(, 0, 0);
+    // },
 
     /*
      *
@@ -269,16 +302,7 @@ export default {
       }
     },
   },
-  mounted() {
-    this.canvas = this.$refs.canvas;
-    this.ctx = this.$refs.canvas.getContext('2d');
-    this.canvasx = this.canvas.offsetLeft;
-    this.canvasy = this.canvas.offsetTop;
-
-    // TESTING:
-    // this.ctx.fillStyle = 'green';
-    // this.ctx.fillRect(10, 10, 150, 150);
-  },
+  mounted() {},
   computed: {
     computedDateFormatted() {
       return this.formatDate(this.date);
@@ -296,5 +320,6 @@ export default {
 canvas {
   cursor: crosshair;
   border: 1px solid #000000;
+  background-repeat: no-repeat;
 }
 </style>
