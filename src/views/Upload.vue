@@ -116,15 +116,50 @@
         </v-card-title>
         <v-card-text>
           <div
+            id="image-wrapper"
+            ref="wrapper"
+            @mousedown="mousedownX"
+            @mousemove="mousemoveX"
+            @mouseup="mouseupX"
+          >
+            <Box
+              v-if="drawingBox.active"
+              :b-width="drawingBox.width"
+              :b-height="drawingBox.height"
+              :b-top="drawingBox.top"
+              :b-left="drawingBox.left"
+            />
+            <Box
+              v-for="(box, i) in boxes"
+              :key="i"
+              :b-top="box.top"
+              :b-left="box.left"
+              :b-label="box.label"
+              :b-width="box.width"
+              :b-height="box.height"
+              :b-active="i === activeBoxIndex"
+              :on-select="makeBoxActive"
+              :b-index="i"
+              :on-delete="removeBox"
+            />
+          </div>
+          <img
+            ref="image"
+            v-if="previewImage"
+            :src="previewImage"
+            style="display: none"
+            @load="canvasLoad"
+          />
+          <!-- <img ref="image" v-if="previewImage" :src="previewImage" /> -->
+          <!-- <div
             width="800"
             ref="canvas"
             height="500"
             @mousedown="mousedownX"
             @mousemove="mousemoveX"
             @mouseup="mouseupX"
-          >
-          </div>
-          <img ref="image" v-if="previewImage" :src="previewImage" style="display: none;" @load="canvasLoad"/>
+          ></div>
+          -->
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -147,10 +182,20 @@
 
 <script>
 import imageService from "@/services/imageService";
+import Box from "@/components/Box";
+
+// const getCoursorLeft = (e) => {
+//   return e.pageX - 10;
+// };
+
+// const getCoursorTop = (e) => {
+//   return e.pageY - 10;
+// };
 
 export default {
   name: "Upload",
   props: ["show"],
+  components: { Box },
   data: (this_) => ({
     image: [],
     previewImage: null,
@@ -178,15 +223,29 @@ export default {
      * LABELLING TOOL
      *
      */
-    canvas: null,
-    ctx: null,
-    canvasx: null,
-    canvasy: null,
+    wrapper: null,
     last_mousex: 0,
     last_mousey: 0,
+    wrappery: 0,
+    wrapperx: 0,
     mousex: 0,
     mousey: 0,
-    mousedown: false,
+
+    drawingBox: {
+      active: false,
+      top: 0,
+      left: 0,
+      height: 0,
+      width: 0,
+    },
+    boxes: [{
+      active: false,
+      top: 0,
+      left: 0,
+      height: 100,
+      width: 100,
+    }],
+    activeBoxIndex: null,
   }),
   methods: {
     hideForm() {
@@ -249,24 +308,13 @@ export default {
     },
     openLabellingTool() {
       this.showLabellingTool = true;
-      // this.ctx.drawImage(img, 0, 0);
-
-      // TESTING:
-      // this.ctx.fillStyle = 'green';
-      // this.ctx.fillRect(10, 10, 150, 150);
     },
     canvasLoad() {
-      alert()
-      this.canvas = this.$refs.canvas;
-      this.ctx = this.$refs.canvas.getContext("2d");
-      this.canvasx = this.canvas.offsetLeft;
-      this.canvasy = this.canvas.offsetTop;
-      this.canvas.style.background = `url('${this.previewImage}')`;
-      this.canvas.style.backgroundRepeat = 'no-repeat';
+      this.wrapper = this.$refs.wrapper;
+      this.wrapper.style = `background-image: url('${this.previewImage}');background-repeat: no-repeat;`;
+      this.wrapperx = this.wrapper.offsetLeft;
+      this.wrappery = this.wrapper.offsetTop;
     },
-    // imageLoad() {
-    //   this.ctx.drawImage(, 0, 0);
-    // },
 
     /*
      *
@@ -274,32 +322,67 @@ export default {
      *
      */
     mousedownX(e) {
-      this.last_mousex = parseInt(e.pageX - this.canvasx);
-      this.last_mousey = parseInt(e.pageY - this.canvasy);
-      this.mousedown = true;
-    },
-    mouseupX(e) {
-      console.log(e);
-      this.mousedown = false;
-    },
+      console.log('mousedownX', JSON.stringify(this.drawingBox));
+      this.last_mousex = parseInt(e.pageX - this.wrapperx);
+      this.last_mousey = parseInt(e.pageY - this.wrappery);
 
+      this.drawingBox = {
+        width: 0,
+        height: 0,
+        top: this.last_mousey,
+        left: this.last_mousex,
+        active: true,
+      };
+    },
     mousemoveX(e) {
-      this.mousex = parseInt(e.pageX - this.canvasx);
-      this.mousey = parseInt(e.pageY - this.canvasy);
-      if (this.mousedown) {
-        //clear rect debri
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.ctx.beginPath();
-
+      console.log('mousemoveX', JSON.stringify(this.drawingBox));
+      if (this.drawingBox.active) {
+        this.mousex = parseInt(e.pageX - this.wrapperx);
+        this.mousey = parseInt(e.pageY - this.wrappery);
         var width = this.mousex - this.last_mousex;
         var height = this.mousey - this.last_mousey;
 
-        this.ctx.rect(this.last_mousex, this.last_mousey, width, height);
-
-        this.ctx.strokeStyle = "red";
-        this.ctx.lineWidth = 3;
-        this.ctx.stroke();
+        this.drawingBox = {
+          ...this.drawingBox,
+          width: width,
+          height: height,
+        };
       }
+    },
+    mouseupX() {
+      console.log('mouseupX', JSON.stringify(this.drawingBox));
+      if (this.drawingBox.active) {
+        if (this.drawingBox.width > 5) {
+          this.boxes.push({
+            ...this.pick(this.drawingBox, ["width", "height", "top", "left"]),
+          });
+        }
+        this.drawingBox = {
+          active: false,
+          top: 0,
+          left: 0,
+          height: 0,
+          width: 0,
+        };
+      }
+    },
+    makeBoxActive(i) {
+      this.activeBoxIndex = i;
+    },
+    removeBox(i) {
+      this.boxes = this.boxes.filter((elem, index) => {
+        return index !== i;
+      });
+      this.activeBoxIndex = null;
+    },
+    pick(object, keys) {
+      return keys.reduce((obj, key) => {
+        // eslint-disable-next-line
+        if (object && object.hasOwnProperty(key)) {
+          obj[key] = object[key];
+        }
+        return obj;
+      }, {});
     },
   },
   mounted() {},
@@ -322,4 +405,41 @@ canvas {
   border: 1px solid #000000;
   background-repeat: no-repeat;
 }
+#app {
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+}
+#app #image-wrapper {
+  height: 640px;
+  width: 640px;
+  background-repeat: no-repeat;
+  position: relative;
+  background-size: contain;
+}
+#app #label-bar {
+  float: right;
+  margin-right: 50px;
+  width: 220px;
+}
+#app #label-bar ul {
+  padding: 0;
+}
+#app #label-bar ul li {
+  list-style-type: none;
+  padding: 8px 16px;
+}
+#app #label-bar ul li.active {
+  background-color: lightblue;
+}
+#app #label-bar ul li a {
+  cursor: pointer;
+  display: inline-block;
+  margin-left: 4px;
+  font-weight: bold;
+  color: red;
+}
+
 </style>
