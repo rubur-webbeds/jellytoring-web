@@ -109,49 +109,78 @@
         </template>
       </v-snackbar>
     </v-dialog>
-    <v-dialog v-model="showLabellingTool" fullscreen hide-overlay>
+
+    <!-- ToDo: Maybe create component label-tool -->
+    <v-dialog v-model="showLabellingTool" fullscreen persistent hide-overlay>
       <v-card>
         <v-card-title>
           <span class="text-h5">Label</span>
         </v-card-title>
         <v-card-text>
-          <div
-            id="image-wrapper"
-            ref="wrapper"
-            @mousedown="mousedownX"
-            @mousemove="mousemoveX"
-            @mouseup="mouseupX"
-          >
-            <Box
-              v-if="drawingBox.active"
-              :b-width="drawingBox.width"
-              :b-height="drawingBox.height"
-              :b-top="drawingBox.top"
-              :b-left="drawingBox.left"
-            />
-            <Box
-              v-for="(box, i) in boxes"
-              :key="i"
-              :b-top="box.top"
-              :b-left="box.left"
-              :b-label="box.label"
-              :b-width="box.width"
-              :b-height="box.height"
-              :b-active="i === activeBoxIndex"
-              :on-select="makeBoxActive"
-              :b-index="i"
-              :on-delete="removeBox"
-            />
-          </div>
-          <img
-            ref="image"
-            v-if="previewImage"
-            :src="previewImage"
-            style="display: none"
-            @load="canvasLoad"
-          />
-          <!-- <img ref="image" v-if="previewImage" :src="previewImage" /> -->
-          <!-- <div
+            <v-row>
+              <v-col cols="12" md="9">
+                <div class="fill" ref="wrapperparent">
+                  <!-- <img src="https://picsum.photos/id/237/320/240" alt="" /> -->
+                  <!-- <div
+                    id="image-wrapper"
+                    ref="wrapper"
+                    @mousedown="mousedownX"
+                    @mousemove="mousemoveX"
+                    @mouseup="mouseupX"
+                  >
+
+                  </div> -->
+                  <img
+                    v-if="previewImage"
+                    :src="previewImage"
+                    @load="canvasLoad"
+                    ref="wrapper"
+                    @mousedown="mousedownX"
+                    @mousemove="mousemoveX"
+                    @mouseup="mouseupX"
+                  />
+                    <Box
+                      v-if="drawingBox.active"
+                      :b-width="drawingBox.width"
+                      :b-height="drawingBox.height"
+                      :b-top="drawingBox.top"
+                      :b-left="drawingBox.left"
+                    />
+                    <Box
+                      v-for="(box, i) in boxes"
+                      :key="i"
+                      :b-top="box.top"
+                      :b-left="box.left"
+                      :b-label="box.label"
+                      :b-width="box.width"
+                      :b-height="box.height"
+                      :b-active="i === activeBoxIndex"
+                      :on-select="makeBoxActive"
+                      :b-index="i"
+                      :on-delete="removeBox"
+                    />
+                </div>
+
+              </v-col>
+              <v-col cols="12" md="3">
+                <v-autocomplete
+                  clearable
+                  v-model="autocompleteValues"
+                  :items="autocompleteItems"
+                ></v-autocomplete>
+                <ul>
+                  <li
+                    v-for="(box, i) in boxes"
+                    :key="i"
+                    v-bind:class="{ active: i === activeBoxIndex }"
+                  >
+                    <input v-model="box.label" v-on:click="makeBoxActive(i)" />
+                    <a @click="removeBox(i)">x</a>
+                  </li>
+                </ul>
+              </v-col>
+              <!-- <img ref="image" v-if="previewImage" :src="previewImage" /> -->
+              <!-- <div
             width="800"
             ref="canvas"
             height="500"
@@ -160,6 +189,7 @@
             @mouseup="mouseupX"
           ></div>
           -->
+            </v-row>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -238,14 +268,18 @@ export default {
       height: 0,
       width: 0,
     },
-    boxes: [{
-      active: false,
-      top: 0,
-      left: 0,
-      height: 100,
-      width: 100,
-    }],
+    boxes: [
+      {
+        active: false,
+        top: 0,
+        left: 0,
+        height: 100,
+        width: 100,
+      },
+    ],
     activeBoxIndex: null,
+    autocompleteValues: [],
+    autocompleteItems: ["Especie #1", "Especie #2", "Especie #3", "Especie #4"],
   }),
   methods: {
     hideForm() {
@@ -311,9 +345,12 @@ export default {
     },
     canvasLoad() {
       this.wrapper = this.$refs.wrapper;
-      this.wrapper.style = `background-image: url('${this.previewImage}');background-repeat: no-repeat;`;
-      this.wrapperx = this.wrapper.offsetLeft;
-      this.wrappery = this.wrapper.offsetTop;
+      // const wrapperparent = this.$refs.wrapperparent;
+      // this.wrapper.style = `background-image: url('${this.previewImage}');background-repeat: no-repeat;`;
+      // this.wrapperx = wrapperparent.offsetLeft;
+      // this.wrappery = wrapperparent.offsetTop;
+      // console.log('this.wrapperx:', this.wrapperx);
+      // console.log('this.wrappery', this.wrappery);
     },
 
     /*
@@ -322,9 +359,12 @@ export default {
      *
      */
     mousedownX(e) {
-      console.log('mousedownX', JSON.stringify(this.drawingBox));
-      this.last_mousex = parseInt(e.pageX - this.wrapperx);
-      this.last_mousey = parseInt(e.pageY - this.wrappery);
+      console.log("mousedownX", JSON.stringify(this.drawingBox));
+      console.log('e.pageX', e.pageX);
+      console.log('e.pageY', e.pageY);
+      this.last_mousex = parseInt(e.pageX);
+      this.last_mousey = parseInt(e.pageY);
+      console.log('this.last_mousey:', this.last_mousey, 'this.last_mousex', this.last_mousex);
 
       this.drawingBox = {
         width: 0,
@@ -335,10 +375,10 @@ export default {
       };
     },
     mousemoveX(e) {
-      console.log('mousemoveX', JSON.stringify(this.drawingBox));
+      console.log("mousemoveX", JSON.stringify(this.drawingBox));
       if (this.drawingBox.active) {
-        this.mousex = parseInt(e.pageX - this.wrapperx);
-        this.mousey = parseInt(e.pageY - this.wrappery);
+        this.mousex = parseInt(e.pageX);
+        this.mousey = parseInt(e.pageY);
         var width = this.mousex - this.last_mousex;
         var height = this.mousey - this.last_mousey;
 
@@ -350,7 +390,7 @@ export default {
       }
     },
     mouseupX() {
-      console.log('mouseupX', JSON.stringify(this.drawingBox));
+      console.log("mouseupX", JSON.stringify(this.drawingBox));
       if (this.drawingBox.active) {
         if (this.drawingBox.width > 5) {
           this.boxes.push({
@@ -413,8 +453,8 @@ canvas {
   color: #2c3e50;
 }
 #app #image-wrapper {
-  height: 640px;
-  width: 640px;
+  /* width: 512px;
+  height: 512px; */
   background-repeat: no-repeat;
   position: relative;
   background-size: contain;
@@ -441,5 +481,22 @@ canvas {
   font-weight: bold;
   color: red;
 }
+.fill {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.fill img {
+  object-fit: content;
+  /* flex-shrink: 0; */
+  min-width: 100%;
+  min-height: 100%;
 
+  /* disable image ghosting */
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+}
 </style>

@@ -6,7 +6,8 @@
       :style="{
         top: bTop - 10 + 'px',
         left: bLeft + 'px',
-        width: bWidth + 4 + 'px',
+        width: bWidth + 'px',
+        paddingLeft: '4px',
       }"
     >
       {{ bLabel }}
@@ -16,11 +17,11 @@
       v-on:click="removeMyself"
       v-if="bActive"
       :style="{
-        top: bTop - 18 + 'px',
-        left: bLeft + bWidth + 'px',
+        top: bTop + 5 + 'px',
+        left: bLeft + bWidth - 30 + 'px',
       }"
     >
-      X
+      <v-icon dark>mdi-close</v-icon>
     </a>
     <div
       class="box"
