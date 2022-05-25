@@ -58,7 +58,7 @@ const routes = [
         component: Activity
       },
       {
-        path: '/pending',
+        path: 'pending',
         name: 'pending',
         component: Pending
       },
