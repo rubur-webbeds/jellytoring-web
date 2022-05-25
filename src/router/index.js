@@ -10,6 +10,8 @@ import Activity from '../views/admin/Activity.vue'
 import Pending from '../views/admin/Pending.vue'
 import Profile from '../views/Profile.vue'
 import EmailConfirmation from '../views/login/EmailConfirmation.vue'
+import PasswordRecoveryEmail from '../views/login/PasswordRecoveryEmail'
+import PasswordRecoveryForm from '../views/login/PasswordRecoveryForm'
 import authService from "@/services/authService";
 
 Vue.use(VueRouter)
@@ -65,6 +67,14 @@ const routes = [
   {
     path: '/emailconfirmation/:confirmationCode',
     component: EmailConfirmation
+  },
+  {
+    path: '/passwordrecoveryemail',
+    component: PasswordRecoveryEmail
+  },
+  {
+    path: '/passwordrecoveryform/:confirmationCode',
+    component: PasswordRecoveryForm
   }
 ]
 

@@ -4,7 +4,7 @@
       <v-toolbar dark>
         <v-toolbar-title>
           <v-icon>mdi-account</v-icon>
-          <span class="ml-3"> Sign in </span>
+          <span class="ml-3"> Reset your password </span>
         </v-toolbar-title>
       </v-toolbar>
       <v-card-text>
@@ -16,18 +16,8 @@
             type="email"
             v-model="email"
             :rules="[validationRules.required, validationRules.email]"
+            @keyup.enter="sendResetEmail"
           ></v-text-field>
-          <v-text-field
-            id="password"
-            prepend-icon="mdi-lock"
-            name="password"
-            label="Password"
-            type="password"
-            v-model="password"
-            :rules="[validationRules.required]"
-            @keyup.enter="login"
-          ></v-text-field>
-          <v-btn plain text small to="passwordrecoveryemail">Forgot my password</v-btn>
         </v-form>
         <v-alert
           v-if="showError"
@@ -37,30 +27,43 @@
           transition="scale-transition"
           dismissible
         >
-          Please check your email and password and try again.
+          Oops! Something went wrong
         </v-alert>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn
-          @click="this.login"
+          @click="this.sendResetEmail"
           :loading="buttonLoading"
           :disabled="buttonLoading || !validForm"
-          >Sign in</v-btn
+          >Send password reset email</v-btn
         >
       </v-card-actions>
     </v-card>
+
+    <v-dialog v-model="showResponseDialog" persistent max-width="600px">
+      <v-card>
+        <v-card-title>Almost there!</v-card-title>
+        <v-card-text>
+          Check your inbox. We've sent a reset email to
+          <strong>{{ this.email }}</strong>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn text @click="showResponseDialog = false">Close</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
 <script>
-import authService from "@/services/authService.js";
+import passwordResetService from "@/services/passwordResetService.js";
 
 export default {
-  name: "Login",
+  name: "PasswordRecoveryEmail",
   data: () => ({
     email: "",
-    password: "",
     showError: false,
     buttonLoading: false,
     validForm: false,
@@ -72,29 +75,23 @@ export default {
         return pattern.test(value) || "Invalid e-mail";
       },
     },
+    showResponseDialog: false
   }),
   methods: {
-    async login() {
+    async sendResetEmail() {
       if (this.validForm) {
         this.showError = false;
         this.buttonLoading = true;
         try {
-          const response = await authService.login(this.email, this.password);
-
-          const jwt = response.data;
-          authService.setUserLogged(jwt);
-          this.$router.push("/dashboard");
+          await passwordResetService.sendResetEmail(this.email);
+          this.showResponseDialog = true;
+          this.buttonLoading = false;
         } catch (error) {
           this.showError = true;
           this.buttonLoading = false;
         }
       }
     }
-  },
-  created() {
-    if (authService.isUserLogged()) {
-      this.$router.push("/dashboard");
-    }
-  },
+  }
 };
 </script>
