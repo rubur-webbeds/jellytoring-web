@@ -47,7 +47,7 @@
               </v-btn>
             </v-btn-toggle>
             <v-spacer></v-spacer>
-            <v-btn large color="primary" @click="showUploadForm = true">
+            <v-btn large color="primary" @click="showInferenceForm = true">
               <v-icon left>mdi-upload</v-icon>
               Upload
             </v-btn>
@@ -171,6 +171,7 @@
       </template>
     </v-data-iterator>
     <Upload :show.sync="showUploadForm" :images.sync="items" />
+    <Inferences :show.sync="showInferenceForm" />
     <v-snackbar v-model="showError" timeout="-1">
       Could not retrieve images. Please reload and try again later.
       <template v-slot:action="{ attrs }">
@@ -186,15 +187,18 @@
 
 <script>
 import Upload from "@/views/Upload.vue";
+import Inferences from "@/views/Inferences.vue";
 import imageService from "@/services/imageService";
 
 export default {
   components: {
     Upload,
+    Inferences,
   },
   data() {
     return {
       showUploadForm: false,
+      showInferenceForm: false,
       showError: true,
       itemsPerPageArray: [4, 8, 16, 24, 32, 64],
       search: "",

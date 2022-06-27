@@ -10,9 +10,9 @@
 
       <v-spacer></v-spacer>
       <template v-if="!this.isUserLogged()">
-        <v-btn text outlined @click="showUploadForm = true">
+        <!-- <v-btn text outlined @click="showUploadForm = true">
           <v-icon>mdi-plus</v-icon>
-        </v-btn>
+        </v-btn> -->
         <v-btn text to="login">Sign in</v-btn>
         <v-btn text outlined to="signup">Sign up</v-btn>
       </template>
