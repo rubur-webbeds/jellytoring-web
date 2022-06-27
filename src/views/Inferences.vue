@@ -32,12 +32,25 @@
               </v-alert>
             </v-col>
           </v-row>
+          <v-row>
+              <v-col cols="12" md="12">
+                  <v-progress-linear
+                    v-if="isInferenceRunning"
+                    indeterminate
+                ></v-progress-linear>
+
+                <v-img
+                    v-if="isInferenceCompleted"
+                    :src="`/images/${resultImagePath}`"
+                ></v-img>
+              </v-col>
+          </v-row>
         </v-container>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="grey darken-1" text @click="hideForm">Cancel</v-btn>
-        <v-btn color="green darken-1" text @click="createInference">Infer</v-btn>
+        <v-btn color="green darken-1" text @click="createInference" :disabled="buttonLoading">Infer</v-btn>
       </v-card-actions>
     </v-card>
     <!-- <v-snackbar v-model="showSuccess">
@@ -61,9 +74,12 @@ export default {
     image: [],
     showError: false,
     showSuccess: false,
+    buttonLoading: false,
     polling: null,
     runningInferenceId: 0, 
     isInferenceRunning: false,
+    isInferenceCompleted: false,
+    resultImagePath: "",
   }),
   methods: {
     hideForm() {
@@ -83,6 +99,8 @@ export default {
 
                 if (response.data != "RUNNING"){
                     this.isInferenceRunning = false;
+                    this.isInferenceCompleted = true;
+                    this.resultImagePath = response.data;
 
                     // stop polling and delete inferenceId from local storage
                     this.stopPolling();
@@ -106,17 +124,18 @@ export default {
         formData.append("file", this.image);
 
         console.log("creating inference...");
+        this.isInferenceRunning = true;
         const response = await inferenceService.createInference(formData);
         console.log(response);
         this.showSuccess = true;
 
         // save into local storage
-        this.isInferenceRunning = true;
+        this.isInferenceCompleted = false;
         this.runningInferenceId = response.data;
         localStorage.setItem("runningInferenceId", this.runningInferenceId);
 
         // start polling
-        //this.pollData(this.runningInferenceId)
+        this.pollData(this.runningInferenceId)
 
       } catch (error) {
         this.showError = true;
@@ -143,11 +162,6 @@ export default {
   },
   beforeDestroy(){
     this.stopPolling()
-  },
-  watch: {
-      runningInferenceId(){
-        this.pollData(this.runningInferenceId)
-      }
   },
 };
 </script>
