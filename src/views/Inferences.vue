@@ -38,11 +38,23 @@
                     v-if="isInferenceRunning"
                     indeterminate
                 ></v-progress-linear>
-
-                <v-img
-                    v-if="isInferenceCompleted"
-                    :src="`/images/${resultImagePath}`"
-                ></v-img>
+                <div v-if="isInferenceCompleted">
+                    <v-img
+                        :src="`/images/${resultImagePath}`"
+                        class="white--text align-end"
+                        height="200px"
+                        gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                    ></v-img>
+                    <v-btn
+                        :href="`/images/${resultImagePath}`"
+                        target="_blank"
+                        block
+                        outlined
+                        class="mt-4"
+                    >
+                        open image
+                    </v-btn>
+                </div>
               </v-col>
           </v-row>
         </v-container>
