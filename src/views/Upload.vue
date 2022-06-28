@@ -57,14 +57,6 @@
                 ></v-date-picker>
               </v-menu>
             </v-col>
-            <v-col cols="12" md="6">
-              <v-select
-                :items="['Just upload', 'Label image', 'Infer species']"
-                label="Action"
-                v-model="uploadType"
-                required
-              ></v-select>
-            </v-col>
           </v-row>
           <v-row>
             <v-col cols="12" md="12">
