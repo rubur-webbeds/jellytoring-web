@@ -47,10 +47,29 @@
               </v-btn>
             </v-btn-toggle>
             <v-spacer></v-spacer>
-            <v-btn large color="primary" @click="showInferenceForm = true">
+
+            <v-menu offset-y>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  large
+                  dark
+                  v-bind="attrs"
+                  v-on="on"
+                >
               <v-icon left>mdi-upload</v-icon>
               Upload
             </v-btn>
+              </template>
+              <v-list>
+                <v-list-item
+                  v-for="(option, index) in uploadOptions"
+                  :key="index"
+                  @click="option.action"
+                >
+                  <v-list-item-title>{{ option.title }}</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
           </template>
           <v-spacer></v-spacer>
           <v-spacer></v-spacer>
@@ -122,9 +141,27 @@
       <template v-slot:no-data>
         <div class="grey--text text--darken-1 text-center text-body-4 mt-8">
           <div class="mb-4">No images yet?</div>
-          <v-btn class="ma-1" dark @click="showUploadForm = true">
-            UPLOAD NOW
-          </v-btn>
+          <v-menu offset-y>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  dark
+                  v-bind="attrs"
+                  v-on="on"
+                >
+              <v-icon left>mdi-upload</v-icon>
+              Upload now
+            </v-btn>
+              </template>
+              <v-list>
+                <v-list-item
+                  v-for="(option, index) in uploadOptions"
+                  :key="index"
+                  @click="option.action"
+                >
+                  <v-list-item-title>{{ option.title }}</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
         </div>
       </template>
       <template v-slot:footer>
@@ -213,6 +250,10 @@ export default {
         { t: "Status", v: "status.code" },
       ],
       items: [],
+      uploadOptions: [
+        { title: 'Just upload', action: () => {this.showUploadForm = true}},
+        { title: 'Infer species', action: () => {this.showInferenceForm = true} },
+      ],
     };
   },
   computed: {
