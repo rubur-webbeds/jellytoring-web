@@ -39,21 +39,13 @@
                     indeterminate
                 ></v-progress-linear>
                 <div v-if="isInferenceCompleted">
-                    <v-img
-                        :src="`/images/${resultImagePath}`"
+                    <v-card
+                        :img="`/images/${resultImagePath}`"
                         class="white--text align-end"
                         height="200px"
-                        gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-                    ></v-img>
-                    <v-btn
                         :href="`/images/${resultImagePath}`"
                         target="_blank"
-                        block
-                        outlined
-                        class="mt-4"
-                    >
-                        open image
-                    </v-btn>
+                    ></v-card>
                 </div>
               </v-col>
           </v-row>
