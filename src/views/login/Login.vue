@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-card class="elevation-12">
+    <v-card>
       <v-toolbar dark>
         <v-toolbar-title>
           <v-icon>mdi-account</v-icon>
@@ -27,7 +27,7 @@
             :rules="[validationRules.required]"
             @keyup.enter="login"
           ></v-text-field>
-          <v-btn plain text small to="passwordrecoveryemail">Forgot my password</v-btn>
+          <v-btn class="ml-5" plain text small color="blue darken-2" to="passwordrecoveryemail">Forgot my password</v-btn>
         </v-form>
         <v-alert
           v-if="showError"
@@ -49,6 +49,14 @@
           >Sign in</v-btn
         >
       </v-card-actions>
+    </v-card>
+    <v-card>
+      <v-container class="d-flex justify-center mt-3">
+        <div class="my-3">
+            <label>Don't have an account yet?</label>
+            <v-btn plain text small color="blue darken-2" to="signup">Create one</v-btn>
+        </div>
+      </v-container>
     </v-card>
   </v-container>
 </template>
