@@ -7,6 +7,11 @@
         v-text="this.title"
         @click="redirectTo('/dashboard')"
       ></div>
+      <div
+        v-if="this.$router.currentRoute.path.includes('admin')"
+        class="text-h8 ml-3 mt-3"
+        v-text="this.adminPanelPlaceholder"
+      ></div>
 
       <v-spacer></v-spacer>
       <template v-if="!this.isUserLogged()">
@@ -37,6 +42,12 @@
                 <p class="text-caption mt-1">
                   {{ user.email }}
                 </p>
+                <div v-if="user.roleCode == 'ADM'">
+                  <v-divider class="my-3"></v-divider>
+                  <v-btn depressed rounded text @click="redirectTo('admin/pending')">
+                    Admin panel
+                  </v-btn>
+                </div>
                 <v-divider class="my-3"></v-divider>
                 <v-btn depressed rounded text @click="logout()">
                   Sign out
@@ -49,7 +60,14 @@
     </v-app-bar>
 
     <v-main>
-      <router-view />
+      <div class="text-center mt-8" v-if="this.showLoading">
+        <v-progress-circular
+          indeterminate
+        ></v-progress-circular>
+      </div>
+      <div v-else>
+        <router-view />
+      </div>
     </v-main>
 
     <Upload :show.sync="showUploadForm" />
@@ -68,7 +86,9 @@ export default {
   data: () => ({
     showUploadForm: false,
     title: "Jellytoring",
+    adminPanelPlaceholder: "Admin Panel",
     user: null,
+    showLoading: false,
   }),
   methods: {
     isUserLogged() {
@@ -81,7 +101,10 @@ export default {
     getUserLogged() {
       this.user = authService.getUserLogged();
     },
-    redirectTo(url) {
+    async redirectTo(url) {
+      this.showLoading = true;
+      await new Promise(r => setTimeout(r, 1000));
+      this.showLoading = false;
       this.$router.push(url);
     },
   },

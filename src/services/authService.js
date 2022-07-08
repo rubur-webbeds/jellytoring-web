@@ -25,6 +25,7 @@ export default {
       const userObject = decodeBase64AndJSONParse(userBase64Encoded);
 
       userObject.firstInitial = getUserFirstInitial(userObject.full_name);
+      userObject.roleCode = getUserRole(userObject.roles);
       return userObject;
     }
   },
@@ -48,4 +49,9 @@ function decodeBase64(encoded) {
 
 function getUserFirstInitial(userName) {
   return userName.charAt(0).toUpperCase();
+}
+
+function getUserRole(rolesObject){
+  var obj = JSON.parse(rolesObject);
+  return obj[0].Code;
 }
